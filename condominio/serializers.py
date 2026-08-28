@@ -12,3 +12,4 @@ class ChamadoSerializer(serializers.ModelSerializer):
         model = Chamado
         fields = ['id', 'titulo', 'descricao', 'status', 'autor', 'created_at']
         depth = 1
+        read_only_fields = ['autor']
