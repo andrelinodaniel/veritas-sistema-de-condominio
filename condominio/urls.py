@@ -6,7 +6,7 @@ from .views import UsuarioViewSet, ChamadoViewSet
 router = DefaultRouter()
 
 router.register('usuarios',UsuarioViewSet)
-router.register('chamados',ChamadoViewSet)
+router.register('chamados',ChamadoViewSet, basename='chamados')
 
 urlpatterns = [
     path('',include(router.urls))
