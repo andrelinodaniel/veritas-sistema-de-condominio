@@ -28,10 +28,17 @@ class Usuario(AbstractUser):
 
 
 class Chamado(models.Model):
+    STATUS_CHOICES = [
+        ('aberto', 'Aberto'),
+        ('em_andamento', 'Em Andamento'),
+        ('concluido', 'Concluído'),
+    ]
     titulo = models.CharField(max_length=30)
     descricao = models.TextField()
-    status = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES,default='aberto')
     autor = models.ForeignKey(Usuario,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return f"{self.titulo}"
 

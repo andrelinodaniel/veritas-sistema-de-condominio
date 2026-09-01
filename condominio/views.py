@@ -19,7 +19,10 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 class ChamadoViewSet(viewsets.ModelViewSet):
     serializer_class = ChamadoSerializer
     permission_classes = [EhAutenticado,IsSindico]
-
+    def get_permissions(self):
+        if self.action in ['create','list','retrieve']:
+            return [EhAutenticado()]
+        return super().get_permissions()
     def get_queryset(self):
         if self.request.user.is_sindico == True:
             return Chamado.objects.all()
