@@ -1,0 +1,29 @@
+.dashboard-container {
+  padding: 0
+}
+.subtitulo {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.card {
+  background-color: var(--cor-card);
+  color: #1e293b;
+  border-radius: 12px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+.card-numero{
+    font-size: 2rem;
+    font-weight: 700;
+}
+.card-label{
+    font-size: 0.8rem;
+    color: #64748b;
+}
