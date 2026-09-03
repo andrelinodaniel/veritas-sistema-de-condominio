@@ -32,8 +32,7 @@ class ChamadoViewSet(viewsets.ModelViewSet):
         return Chamado.objects.filter(autor=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(autor=self.request.user)
-
+        serializer.save(autor=self.request.user) 
 class DashboardView(APIView):
     permission_classes = [EhAutenticado,IsSindico]
     def get(self,request):
