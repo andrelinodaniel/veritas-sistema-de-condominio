@@ -2,13 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../services/auth.service';
+import { API_CONFIG } from '../../config';
 
 // Interface que espelha o que o Django retorna em GET /api/chamados/
 export interface Chamado {
   id: number;
   titulo: string;
   descricao: string;
-  status: string;       // 'aberto' | 'em_andamento' | 'concluido'
+  status: string;       
+  categoria?: string;
+  prioridade?: string;
+  foto?: string;
   autor: any;
   created_at: string;
 }
@@ -24,13 +29,16 @@ export class Chamados implements OnInit {
   chamados: Chamado[] = [];
   mensagemSucesso = '';
   mensagemErro = '';
-  telaChamados = 'lista';
+  telaChamados = 'lista'; // 'lista' | 'novo' | 'detalhe'
   chamadoSelecionado: Chamado | null = null;
+  novoStatusSelecionado: string = '';
+  novaPrioridadeSelecionada: string = '';
+  filtroStatus = 'todos';
   // Variáveis do formulário de novo chamado
   categorias = ['Manutenção', 'Limpeza', 'Segurança', 'Reclamação', 'Sugestão', 'Outros'];
   categoriaSelecionada = '';
-  prioridadeSelecionada = 2; // baixa=2, media=5, urgente=9
-  fotoSelecionada = '';
+  fotoSelecionada = ''; // Apenas para mostrar o nome no HTML
+  fotoArquivoSelecionado: File | null = null; // O arquivo real para enviar pro back
 
   get perfil(): string {
     return this.isSindico ? 'sindico' : 'morador';
@@ -45,13 +53,13 @@ export class Chamados implements OnInit {
   chamadoParaConfirmar: Chamado | null = null;
   // --------------------------
 
-  private apiUrl = 'http://localhost:8000/api/chamados/';
+  private apiUrl = `${API_CONFIG.baseUrl}chamados/`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   ngOnInit(): void {
-    // Verifica se o usuário logado é síndico (guardado no login)
-    this.isSindico = localStorage.getItem('is_sindico') === 'true';
+    // Verifica se o usuário logado é síndico a partir do token
+    this.isSindico = this.authService.isSindico;
     this.usuarioLogado = localStorage.getItem('username') || '';
     this.carregarChamados();
   }
@@ -82,8 +90,15 @@ export class Chamados implements OnInit {
   }
 
   chamadosDoMorador(): Chamado[] {
-     // O backend já filtra para o morador, mas por segurança
      return this.chamados;
+  }
+
+  chamadosFiltrados(): Chamado[] {
+    let lista = this.perfil === 'morador' ? this.chamadosDoMorador() : this.chamados;
+    if (this.filtroStatus !== 'todos') {
+      lista = lista.filter(c => c.status === this.filtroStatus);
+    }
+    return this.ordenarPorUrgencia(lista);
   }
 
   // --- Criar chamado (POST para o Django) ---
@@ -97,14 +112,26 @@ export class Chamados implements OnInit {
       return;
     }
 
-    const body = { titulo, descricao, status: 'aberto' };
+    const formData = new FormData();
+    formData.append('titulo', titulo);
+    formData.append('descricao', descricao);
+    formData.append('status', 'aberto');
+    if (this.categoriaSelecionada) {
+      formData.append('categoria', this.categoriaSelecionada);
+    }
+    if (this.fotoArquivoSelecionado) {
+      formData.append('foto', this.fotoArquivoSelecionado);
+    }
 
-    this.http.post(this.apiUrl, body, { headers: this.getHeaders() }).subscribe({
+    this.http.post(this.apiUrl, formData, { headers: this.getHeaders() }).subscribe({
       next: () => {
         this.mensagemSucesso = 'Chamado criado com sucesso!';
         this.mensagemErro = '';
         tituloInput.value = '';
         descricaoInput.value = '';
+        this.categoriaSelecionada = '';
+        this.fotoSelecionada = '';
+        this.fotoArquivoSelecionado = null;
         this.telaChamados = 'lista';
         this.carregarChamados(); // Recarrega a lista do Django
       },
@@ -127,6 +154,42 @@ export class Chamados implements OnInit {
 
   selecionarChamado(chamado: Chamado): void {
     this.chamadoSelecionado = chamado;
+    this.novoStatusSelecionado = chamado.status;
+    this.novaPrioridadeSelecionada = chamado.prioridade || '';
+    this.telaChamados = 'detalhe';
+  }
+
+  fecharDetalhe(): void {
+    this.chamadoSelecionado = null;
+    this.telaChamados = 'lista';
+  }
+
+  selecionarNovoStatus(status: string): void {
+    this.novoStatusSelecionado = status;
+  }
+
+  selecionarNovaPrioridade(prioridade: string): void {
+    this.novaPrioridadeSelecionada = prioridade;
+  }
+
+  salvarAlteracaoStatus(): void {
+    if (!this.isSindico || !this.chamadoSelecionado) return;
+
+    const body = {
+      status: this.novoStatusSelecionado,
+      prioridade: this.novaPrioridadeSelecionada
+    };
+
+    this.http.patch(`${this.apiUrl}${this.chamadoSelecionado.id}/`, body, { headers: this.getHeaders() }).subscribe({
+      next: () => {
+        this.mensagemSucesso = 'Chamado atualizado com sucesso!';
+        this.carregarChamados();
+        this.fecharDetalhe();
+      },
+      error: () => {
+        this.mensagemErro = 'Erro ao atualizar chamado.';
+      }
+    });
   }
 
   // --- Resolver chamado (PATCH no Django, muda status) ---
@@ -200,8 +263,10 @@ export class Chamados implements OnInit {
 
   selecionarFoto(input: HTMLInputElement) {
     if (input.files && input.files[0]) {
+      this.fotoArquivoSelecionado = input.files[0];
       this.fotoSelecionada = input.files[0].name;
     } else {
+      this.fotoArquivoSelecionado = null;
       this.fotoSelecionada = '';
     }
   }

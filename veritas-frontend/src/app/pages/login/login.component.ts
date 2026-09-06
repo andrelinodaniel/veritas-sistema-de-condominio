@@ -38,17 +38,23 @@ export class LoginComponent {
     } 
 
     this.erroLogin = '';
+    const cpfLimpo = cpf.replace(/\D/g, '');
     
     // 2. Chamando o Motoboy para ir no Django
-    this.authService.fazerLoginNoDjango(cpf, senha).subscribe({
+    this.authService.fazerLoginNoDjango(cpfLimpo, senha).subscribe({
       next: (resposta) => {
         // Caminho Feliz! O Django gostou da senha e devolveu o Crachá (Token).
         // Guardamos o crachá na gaveta mágica do navegador:
         localStorage.setItem('token', resposta.access);
         
-        // E usamos o GPS para levar o usuário pra página principal (Dashboard)
+        // E usamos o GPS para levar o usuário pra página principal
         console.log('Login feito com sucesso! Bem-vindo.');
-        this.router.navigate(['/dashboard']);
+        
+        if (resposta.is_sindico) {
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.router.navigate(['/chamados']);
+        }
       },
       error: (erro) => {
         // Caminho Triste! Senha errada ou Django desligado.

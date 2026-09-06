@@ -982,3 +982,261 @@ button.botao-secundario:hover {
     padding: 10px 0 0;
   }
 }
+
+/* ==================================
+   NOVO DESIGN: Lista de Chamados
+   ================================== */
+
+.header-chamados {
+  padding: 24px 20px 16px;
+  background-color: #272c33; 
+  color: #fff;
+  margin: -20px -20px 0 -20px;
+}
+
+.header-chamados .header-content h2 {
+  font-family: 'DM Serif Display', serif;
+  margin: 0 0 4px 0;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.header-chamados .header-content p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.filtros-chamados {
+  display: flex;
+  gap: 8px;
+  padding: 16px 20px;
+  margin: 0 -20px 10px -20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background-color: var(--cor-fundo);
+}
+
+.filtros-chamados::-webkit-scrollbar {
+  display: none;
+}
+
+.filtros-chamados button {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #d1d5db;
+  background: transparent;
+  color: var(--cor-texto);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filtros-chamados button.ativo {
+  border-color: #c27838;
+  background-color: #fcefe3;
+  color: #92400e;
+  font-weight: 500;
+}
+
+.lista-chamados-nova {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 0 80px;
+}
+
+.card-chamado {
+  background-color: #ffffff;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+  max-width: 70%;
+  line-height: 1.3;
+}
+
+.badge-status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-aberto { background-color: #c27838; color: #ffffff; }
+.badge-andamento { background-color: #a67c52; color: #ffffff; }
+.badge-concluido { background-color: #4b6b55; color: #ffffff; }
+.badge-resolvido { background-color: #4b6b55; color: #ffffff; }
+
+.card-body p {
+  margin: 0 0 4px 0;
+  font-size: 0.8rem;
+}
+
+.nome-morador {
+  color: #4b5563;
+}
+
+.data-chamado {
+  color: #9ca3af;
+}
+
+/* ==================================
+   NOVO DESIGN: Detalhe do Chamado
+   ================================== */
+
+.detalhe-chamado-novo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--cor-fundo);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.header-detalhe {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background-color: #272c33;
+  color: #fff;
+}
+
+.header-detalhe .btn-voltar {
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.1);
+}
+
+.header-detalhe h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.card-detalhe {
+  background-color: #fff;
+  margin: 20px;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.titulo-detalhe {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem;
+  margin: 12px 0 20px;
+  color: #111827;
+}
+
+.info-detalhe {
+  background-color: #fdfdfd;
+  border: 1px solid #f3f4f6;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.info-row span {
+  color: #d1d5db;
+}
+
+.info-row strong {
+  color: #374151;
+  font-weight: 500;
+  text-align: right;
+  max-width: 65%;
+}
+
+.card-detalhe h4 {
+  font-size: 0.9rem;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.texto-descricao {
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin-bottom: 32px;
+}
+
+.atualizar-status {
+  padding-top: 24px;
+}
+
+.botoes-status {
+  display: flex;
+  gap: 8px;
+}
+
+.botoes-status button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.botoes-status button.ativo {
+  background-color: #c27838;
+  color: #fff;
+  border-color: #c27838;
+}
+
+.botao-salvar {
+  margin: auto 20px 20px;
+  background-color: #272c33;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}

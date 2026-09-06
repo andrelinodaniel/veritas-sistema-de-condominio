@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,7 +11,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class NavbarComponent {
   
-  constructor(private router: Router) {}
+  constructor(private router: Router, public authService: AuthService) {}
 
   // Função para deslogar (Rasgar o crachá e voltar pro login)
   fazerLogout() {

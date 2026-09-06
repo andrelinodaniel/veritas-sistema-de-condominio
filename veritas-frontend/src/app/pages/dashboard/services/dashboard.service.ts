@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_CONFIG } from '../../../config';
 
 export interface DashboardData {
   total_moradores: number;
@@ -15,7 +16,7 @@ export interface DashboardData {
 export class DashboardService {
   
   // URL do Django (agora é a rota real!)
-  private apiUrl = 'http://127.0.0.1:8000/api/dashboard/';
+  private apiUrl = `${API_CONFIG.baseUrl}dashboard/`;
 
   constructor(private http: HttpClient) { }
 

@@ -1,13 +1,19 @@
 @if (telaChamados === 'lista') {
-  <section class="resumo-chamados">
-    @if (perfil === 'morador') {
-      <p><strong>{{ chamadosDoMorador().length }}</strong> chamados criados</p>
-      <p><strong>{{ quantidadeAbertosDoMorador() }}</strong> aguardando atendimento</p>
-    } @else {
-      <p><strong>{{ chamados.length }}</strong> chamados no total</p>
-      <p><strong>{{ quantidadeAbertos() }}</strong> aguardando atendimento</p>
-    }
-  </section>
+  <header class="header-chamados">
+    <div class="header-content">
+      <h2>{{ perfil === 'sindico' ? 'Todos os chamados' : 'Meus chamados' }}</h2>
+      <p>Residencial Jardim das Acácias</p>
+    </div>
+  </header>
+
+  @if (perfil === 'sindico') {
+    <div class="filtros-chamados">
+      <button (click)="filtroStatus = 'todos'" [class.ativo]="filtroStatus === 'todos'">Todos</button>
+      <button (click)="filtroStatus = 'aberto'" [class.ativo]="filtroStatus === 'aberto'">Aberto</button>
+      <button (click)="filtroStatus = 'andamento'" [class.ativo]="filtroStatus === 'andamento'">Em andamento</button>
+      <button (click)="filtroStatus = 'resolvido'" [class.ativo]="filtroStatus === 'resolvido'">Concluído</button>
+    </div>
+  }
 
   @if (perfil === 'morador' && chamadosDoMorador().length === 0) {
     <p class="estado-vazio">Você ainda não abriu nenhum chamado. Use o botão + para criar o primeiro.</p>
@@ -17,58 +23,81 @@
     <p class="estado-vazio">Não há chamados no momento.</p>
   }
 
-  <section class="lista-chamados">
-    @for (chamado of ordenarPorUrgencia(perfil === 'morador' ? chamadosDoMorador() : chamados); track chamado.id) {
-      <article
-        class="cartao-chamado"
-        [class.chamado-selecionado]="chamadoSelecionado === chamado"
-        (click)="selecionarChamado(chamado)"
-      >
-        <div class="linha-chamado">
-          <h3>{{ chamado.titulo }}</h3>
-
-          @if (chamado.status === 'concluido' || chamado.status === 'resolvido') {
-            <span class="status status-resolvido">Concluído</span>
-          } @else {
-            <span class="status status-aberto">Aberto</span>
-          }
+  <section class="lista-chamados-nova">
+    @for (chamado of chamadosFiltrados(); track chamado.id) {
+      <article class="card-chamado" (click)="selecionarChamado(chamado)">
+        <div class="card-header">
+          <h4>{{ chamado.titulo }}</h4>
+          <span class="badge-status" [class]="'badge-' + chamado.status">
+            {{ chamado.status === 'aberto' ? 'Aberto' : (chamado.status === 'andamento' ? 'Em andamento' : 'Concluído') }}
+          </span>
         </div>
-
-        <p class="meta-chamado">#{{ chamado.id }}</p>
+        <div class="card-body">
+          @if (perfil === 'sindico') {
+            <p class="nome-morador">{{ chamado.autor?.first_name }} {{ chamado.autor?.last_name }} - Bloco {{ chamado.autor?.endereco?.bloco || '?' }}, apto {{ chamado.autor?.endereco?.numero || '?' }}</p>
+          }
+          <p class="data-chamado">{{ chamado.created_at | date:'dd MMM' }} · #{{ chamado.id }}</p>
+        </div>
       </article>
     }
   </section>
 
-  @if (chamadoSelecionado !== null) {
-    <section class="conversa-chamado">
-      <header class="cabecalho-conversa">
-        <div>
-          <p class="perfil-criador">Enviado por {{ chamadoSelecionado.autor?.is_sindico ? 'Síndico' : 'Morador' }}</p>
-          <h3>Detalhes do chamado #{{ chamadoSelecionado.id }}</h3>
+}
+
+@if (telaChamados === 'detalhe' && chamadoSelecionado !== null) {
+  <section class="conversa-chamado detalhe-chamado-novo">
+    <div class="header-detalhe">
+      <button (click)="fecharDetalhe()" class="btn-voltar">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h2>Chamado #{{ chamadoSelecionado.id }}</h2>
+    </div>
+
+    <div class="card-detalhe">
+      <span class="badge-status" [class]="'badge-' + chamadoSelecionado.status">
+        {{ chamadoSelecionado.status === 'aberto' ? 'Aberto' : (chamadoSelecionado.status === 'andamento' ? 'Em andamento' : 'Concluído') }}
+      </span>
+      <h3 class="titulo-detalhe">{{ chamadoSelecionado.titulo }}</h3>
+
+      <div class="info-detalhe">
+        <div class="info-row">
+          <span>Morador</span> 
+          <strong>{{ chamadoSelecionado.autor?.first_name }} {{ chamadoSelecionado.autor?.last_name }} - Bloco {{ chamadoSelecionado.autor?.endereco?.bloco || '?' }}, apto {{ chamadoSelecionado.autor?.endereco?.numero || '?' }}</strong>
         </div>
-        <span [class]="chamadoSelecionado.status === 'aberto' ? 'status status-aberto' : 'status status-resolvido'">
-          {{ chamadoSelecionado.status === 'aberto' ? 'Aberto' : 'Concluído' }}
-        </span>
-      </header>
-
-      <div class="mensagens-conversa">
-        <article class="mensagem mensagem-recebida">
-          <p>{{ chamadoSelecionado.descricao }}</p>
-          <span>Solicitante: {{ chamadoSelecionado.autor?.first_name }} {{ chamadoSelecionado.autor?.last_name }}</span>
-        </article>
+        <div class="info-row">
+          <span>Aberto em</span> 
+          <strong>{{ chamadoSelecionado.created_at | date:'dd MMM yyyy, HH:mm' }}</strong>
+        </div>
       </div>
 
-      <div class="acoes-conversa">
-        @if (chamadoSelecionado.status === 'aberto' && perfil === 'sindico') {
-          <button class="botao-sucesso" (click)="pedirConfirmacao('resolver', chamadoSelecionado)">Resolver chamado</button>
-        }
+      <h4>Descrição</h4>
+      <p class="texto-descricao">{{ chamadoSelecionado.descricao }}</p>
 
-        @if (podeAlterar(chamadoSelecionado)) {
-          <button class="botao-perigo" (click)="pedirConfirmacao('excluir', chamadoSelecionado)">Excluir chamado</button>
-        }
-      </div>
-    </section>
-  }
+      @if (perfil === 'sindico') {
+        <div class="atualizar-status">
+          <h4>Atualizar status (ação do síndico)</h4>
+          <div class="botoes-status">
+            <button (click)="selecionarNovoStatus('aberto')" [class.ativo]="novoStatusSelecionado === 'aberto'">Aberto</button>
+            <button (click)="selecionarNovoStatus('andamento')" [class.ativo]="novoStatusSelecionado === 'andamento'">Em andamento</button>
+            <button (click)="selecionarNovoStatus('resolvido')" [class.ativo]="novoStatusSelecionado === 'resolvido'">Concluído</button>
+          </div>
+        </div>
+        
+        <div class="atualizar-status" style="margin-top: 16px; border-top: none; padding-top: 0;">
+          <h4>Definir prioridade</h4>
+          <div class="botoes-status">
+            <button (click)="selecionarNovaPrioridade('baixa')" [class.ativo]="novaPrioridadeSelecionada === 'baixa'" style="background-color: var(--cor-fundo); border-color: #d1d5db; color: #4b5563;" [style.backgroundColor]="novaPrioridadeSelecionada === 'baixa' ? '#10b981' : ''" [style.color]="novaPrioridadeSelecionada === 'baixa' ? '#fff' : ''">Baixa</button>
+            <button (click)="selecionarNovaPrioridade('media')" [class.ativo]="novaPrioridadeSelecionada === 'media'" style="background-color: var(--cor-fundo); border-color: #d1d5db; color: #4b5563;" [style.backgroundColor]="novaPrioridadeSelecionada === 'media' ? '#f59e0b' : ''" [style.color]="novaPrioridadeSelecionada === 'media' ? '#fff' : ''">Média</button>
+            <button (click)="selecionarNovaPrioridade('alta')" [class.ativo]="novaPrioridadeSelecionada === 'alta'" style="background-color: var(--cor-fundo); border-color: #d1d5db; color: #4b5563;" [style.backgroundColor]="novaPrioridadeSelecionada === 'alta' ? '#ef4444' : ''" [style.color]="novaPrioridadeSelecionada === 'alta' ? '#fff' : ''">Alta</button>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (perfil === 'sindico') {
+      <button class="botao-salvar" (click)="salvarAlteracaoStatus()">Salvar alteração</button>
+    }
+  </section>
 
   @if (perfil === 'morador') {
     <button mat-fab class="botao-flutuante" aria-label="Criar novo chamado" (click)="abrirNovoChamado()">
@@ -111,20 +140,7 @@
       </div>
     </fieldset>
 
-    <fieldset class="grupo-escolha">
-      <legend>Prioridade</legend>
-      <div class="opcoes-prioridade">
-        <button type="button" class="opcao-prioridade baixa" [class.opcao-selecionada]="prioridadeSelecionada === 2" (click)="selecionarPrioridade(2)">
-          <span></span>Baixa
-        </button>
-        <button type="button" class="opcao-prioridade media" [class.opcao-selecionada]="prioridadeSelecionada === 5" (click)="selecionarPrioridade(5)">
-          <span></span>Média
-        </button>
-        <button type="button" class="opcao-prioridade urgente" [class.opcao-selecionada]="prioridadeSelecionada === 9" (click)="selecionarPrioridade(9)">
-          <span></span>Urgente
-        </button>
-      </div>
-    </fieldset>
+
 
     <label for="descricao-chamado">Descreva o que está acontecendo</label>
     <textarea id="descricao-chamado" #descricaoInput rows="4" placeholder="Ex.: o portão da garagem está com dificuldade para fechar desde ontem à noite." (input)="ajustarAlturaDescricao(descricaoInput)"></textarea>

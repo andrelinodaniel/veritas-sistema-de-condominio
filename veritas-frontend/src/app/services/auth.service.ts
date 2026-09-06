@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+import { API_CONFIG } from '../config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   // Endereço onde o Django está rodando
-  private url_django = 'http://127.0.0.1:8000/api/token/';
+  private apiUrlToken = `${API_CONFIG.baseUrl}token/`;
 
   // Injetamos o HttpClient (a ferramenta do Angular para fazer requisições na internet)
   constructor(private http: HttpClient) { }
@@ -21,6 +22,22 @@ export class AuthService {
     };
 
     // Mandamos uma carta registrada (POST) com o pacote dentro
-    return this.http.post(this.url_django, pacote);
+    return this.http.post(this.apiUrlToken, pacote);
+  }
+
+  // Descobre se o dono do crachá é síndico
+  get isSindico(): boolean {
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+    
+    try {
+      // O token JWT tem 3 partes separadas por ponto. A segunda parte tem os dados.
+      const payloadBase64 = token.split('.')[1];
+      const payloadDecoded = atob(payloadBase64);
+      const payloadJson = JSON.parse(payloadDecoded);
+      return payloadJson.is_sindico === true;
+    } catch (e) {
+      return false;
+    }
   }
 }

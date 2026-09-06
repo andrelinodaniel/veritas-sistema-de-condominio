@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { API_CONFIG } from '../../config';
 
 @Component({
   selector: 'app-cadastro-morador',
@@ -85,7 +86,7 @@ export class CadastroMorador {
     this.erroCadastro = '';
 
     // --- Envia para a API do Django ---
-    this.http.post('http://localhost:8000/api/usuarios/', dadosCadastro).subscribe({
+    this.http.post(`${API_CONFIG.baseUrl}usuarios/`, dadosCadastro).subscribe({
       next: () => {
         this.cadastroConcluido = 'Cadastro concluído com sucesso! Você já pode entrar no sistema.';
         this.erroCadastro = '';

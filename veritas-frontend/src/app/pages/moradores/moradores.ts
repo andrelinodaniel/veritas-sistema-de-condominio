@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { API_CONFIG } from '../../config';
 
 export interface UsuarioBackend {
   id: number;
@@ -31,8 +32,8 @@ export class Moradores implements OnInit {
   mostrarModalExclusao = false;
   moradorParaExcluir: UsuarioBackend | null = null;
 
-  private apiUrlUsuarios = 'http://localhost:8000/api/usuarios/';
-  private apiUrlEnderecos = 'http://localhost:8000/api/enderecos/';
+  private apiUrlUsuarios = `${API_CONFIG.baseUrl}usuarios/`;
+  private apiUrlEnderecos = `${API_CONFIG.baseUrl}enderecos/`;
 
   constructor(private http: HttpClient) {}
 
