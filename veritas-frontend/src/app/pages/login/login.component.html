@@ -1,67 +1,83 @@
 <div class="login-page">
 
   <!-- =============================== -->
-  <!-- TELA 1: ESCOLHA DE PERFIL       -->
-  <!-- =============================== -->
+  <h1 class="font">Veritas</h1>
+  <p class="font">Gestão do seu condomínio, num só lugar.</p>
+
   @if (telaAtual === 'perfil') {
-    <section class="card-painel-central">
-      <h2>Escolha seu perfil</h2>
-      <p>Bem-vindo ao Veritas. Como você quer entrar?</p>
+  <section class="cartao-acesso">
+    <h2>Escolha seu perfil</h2>
 
-      <div class="opcoes-grid">
-        <!-- O [class.selecionado] aplica a classe CSS "selecionado" magicamente se a condição for verdadeira -->
-        <button class="botao-perfil" (click)="escolherPerfil('morador')" [class.selecionado]="perfil_selecionado === 'morador'">
-          <strong>Morador</strong>
-          <br><span>Abra e acompanhe seus chamados.</span>
-        </button>
-
-        <button class="botao-perfil" (click)="escolherPerfil('sindico')" [class.selecionado]="perfil_selecionado === 'sindico'">
-          <strong>Síndico</strong>
-          <br><span>Gerencie os chamados e moradores.</span>
-        </button>
-      </div>
-
-      <!-- Só mostra o botão de continuar se o usuário já tiver clicado em alguma opção -->
-      @if (perfil_selecionado !== '') {
-        <button class="botao-continuar" (click)="ir_paralogin()">
-          Continuar para login
-        </button>
-      }
-    </section>
-  }
-
-
-  <!-- =============================== -->
-  <!-- TELA 2: FORMULÁRIO DE LOGIN     -->
-  <!-- =============================== -->
-  @if (telaAtual === 'login'){
-    <section class="card-painel-central">
-      <button class="botao-voltar" (click)="voltarParaPerfil()">⬅ Voltar para perfil</button>
-
-      <!-- Usamos o bigode {{ }} para colocar a palavra Morador ou Síndico no título -->
-      <h2>Entrar como {{ perfil_selecionado }}</h2>
-      
-      <div class="campo">
-        <label>CPF</label>
-        <!-- A #cpfInput é um "apelido" para o Angular conseguir ler o que foi digitado depois -->
-        <input #cpfInput type="text" placeholder="000.000.000-00">
-      </div>
-
-      <div class="campo">
-        <label>Senha</label>
-        <input #senhaInput type="password" placeholder="******">
-      </div>
-
-      <!-- Passamos os valores digitados (cpfInput.value) para a função lá no TS -->
-      <button class="botao-continuar" (click)="fazerLogin(cpfInput.value, senhaInput.value)">
-        Entrar
+    <div class="opcoes-perfil">
+      <button class="card-perfil" type="button" (click)="escolherPerfil('morador')" [attr.aria-pressed]="perfil_selecionado === 'morador'">
+        <img class="icone-perfil" src="/assets/icones/morador.webp" alt="Ícone de morador">
+        <strong>Morador</strong>
+        <span>Abra e acompanhe os seus chamados.</span>
       </button>
 
-      <!-- Mensagem de erro vermelha caso erre a senha -->
-      @if (erroLogin !== '') {
-        <p class="erro-texto">{{ erroLogin }}</p>
-      }
-    </section>
-  }
+      <button class="card-perfil" type="button" (click)="escolherPerfil('sindico')" [attr.aria-pressed]="perfil_selecionado === 'sindico'">
+        <img class="icone-perfil" src="/assets/icones/sindico.webp" alt="Ícone de síndico">
+        <strong>Síndico</strong>
+        <span>Gerencie, resolva e acompanhe os chamados.</span>
+      </button>
+    </div>
+
+    @if (perfil_selecionado !== '') {
+      <p class="font2">Perfil escolhido: {{ perfil_selecionado }}</p>
+
+      <button class="botao-continuar" type="button" (click)="ir_paralogin()">
+        Continuar para login
+      </button>
+    } @else {
+      <p>Escolha como deseja entrar no sistema.</p>
+    }
+  </section>
+}
+
+@if (telaAtual === 'login'){
+  <section class="login-container">
+    <button class="botao-voltar" type="button" (click)="voltarParaPerfil()">voltar para perfil</button>
+
+    <h4>Entrar</h4>
+    <div class="campo-login">
+      <label for="identificador">CPF</label>
+      <input
+        id="identificador"
+        #identificadorInput
+        type="text"
+        autocomplete="username"
+        placeholder="000.000.000-00"
+        required>
+    </div>
+
+    <div class="campo-login">
+      <label for="senha">Senha</label>
+      <input
+        id="senha"
+        #senhaInput
+        maxlength="6"
+        type="password"
+        autocomplete="current-password"
+        placeholder="******"
+        required>
+    </div>
+
+    <button
+      class="botao-entrar"
+      (click)="fazerLogin(identificadorInput.value, senhaInput.value)">
+      Entrar
+    </button>
+    
+    @if (perfil_selecionado === 'morador') {
+      <span class="dourado" routerLink="/cadastro">
+        Ainda não tem conta? Cadastrar-se
+      </span>
+    }
+
+    @if (erroLogin !== '') {
+      <p class="mensagem-erro">{{ erroLogin }}</p>
+    }
+  </section>
+}
 
 </div>

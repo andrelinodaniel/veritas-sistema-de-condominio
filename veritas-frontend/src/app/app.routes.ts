@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { ChamadosComponent } from './pages/chamados/chamados.component';
-import { MoradoresComponent } from './pages/moradores/moradores.component';
+import { Chamados } from './pages/chamados/chamados';
+import { Moradores } from './pages/moradores/moradores';
+import { CadastroMorador } from './pages/cadastro-morador/cadastro-morador';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -11,6 +12,7 @@ export const routes: Routes = [
   
   // Rota pública
   { path: 'login', component: LoginComponent },
+  { path: 'cadastro', component: CadastroMorador },
   
   // Rotas Privadas (Protegidas pelo Guarda-Costas)
   { 
@@ -20,12 +22,12 @@ export const routes: Routes = [
   },
   { 
     path: 'chamados', 
-    component: ChamadosComponent,
+    component: Chamados,
     canActivate: [authGuard] 
   },
   { 
     path: 'moradores', 
-    component: MoradoresComponent,
+    component: Moradores,
     canActivate: [authGuard] 
   },
 

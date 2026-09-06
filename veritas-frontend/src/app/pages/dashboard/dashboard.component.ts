@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MatRipple } from '@angular/material/core';
+import { RouterModule } from '@angular/router';
 import { ChartChamadosComponent } from './components/chart-chamados/chart-chamados.component';
 import { DashboardService, DashboardData } from './services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatRipple,ChartChamadosComponent],
+  imports: [MatRipple, ChartChamadosComponent, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })

@@ -1,0 +1,205 @@
+@if (telaChamados === 'lista') {
+  @if (perfil === 'sindico') {
+    <div class="acoes-lista">
+      <button class="botao-secundario" (click)="abrirHistorico()">Ver histórico</button>
+    </div>
+  }
+
+  <section class="resumo-chamados">
+    @if (perfil === 'morador') {
+      <p><strong>{{ chamadosDoMorador().length }}</strong> chamados criados</p>
+      <p><strong>{{ quantidadeAbertosDoMorador() }}</strong> aguardando atendimento</p>
+    } @else {
+      <p><strong>{{ chamados.length }}</strong> chamados no total</p>
+      <p><strong>{{ quantidadeAbertos() }}</strong> aguardando atendimento</p>
+    }
+  </section>
+
+  @if (perfil === 'morador' && chamadosDoMorador().length === 0) {
+    <p class="estado-vazio">Você ainda não abriu nenhum chamado. Use o botão + para criar o primeiro.</p>
+  }
+
+  @if (perfil === 'sindico' && chamados.length === 0) {
+    <p class="estado-vazio">Não há chamados no momento.</p>
+  }
+
+  <section class="lista-chamados">
+    @for (chamado of ordenarPorUrgencia(perfil === 'morador' ? chamadosDoMorador() : chamados); track chamado.id) {
+      <article
+        class="cartao-chamado"
+        [class.chamado-selecionado]="chamadoSelecionado === chamado"
+        (click)="selecionarChamado(chamado)"
+      >
+        <div class="linha-chamado">
+          <h3>{{ chamado.titulo }}</h3>
+
+          @if (chamado.status === 'resolvido') {
+            <span class="status status-resolvido">Concluído</span>
+          } @else if (chamado.gravidade >= 8) {
+            <span class="status status-urgente">Urgente</span>
+          } @else {
+            <span class="status status-aberto">Aberto</span>
+          }
+        </div>
+
+        <p class="meta-chamado">#{{ chamado.id }} · {{ chamado.categoria }}</p>
+      </article>
+    }
+  </section>
+
+  @if (chamadoSelecionado !== null) {
+    <section class="conversa-chamado">
+      <header class="cabecalho-conversa">
+        <div>
+          <p class="perfil-criador">Enviado por {{ chamadoSelecionado.perfilCriador }}</p>
+          <h3>Detalhes do chamado #{{ chamadoSelecionado.id }}</h3>
+        </div>
+        <span [class]="chamadoSelecionado.status === 'aberto' ? 'status status-aberto' : 'status status-resolvido'">
+          {{ chamadoSelecionado.status === 'aberto' ? 'Aberto' : 'Concluído' }}
+        </span>
+      </header>
+
+      <div class="mensagens-conversa">
+        <article class="mensagem mensagem-recebida">
+          <p>{{ chamadoSelecionado.descricao }}</p>
+          <span>Solicitante: {{ chamadoSelecionado.criadoPor }}</span>
+        </article>
+      </div>
+
+      <div class="acoes-conversa">
+        @if (chamadoSelecionado.status === 'aberto' && perfil === 'sindico') {
+          <button class="botao-sucesso" (click)="pedirConfirmacao('resolver', chamadoSelecionado)">Resolver chamado</button>
+        }
+
+        @if (podeAlterar(chamadoSelecionado)) {
+          <button class="botao-perigo" (click)="pedirConfirmacao('excluir', chamadoSelecionado)">Excluir chamado</button>
+        }
+      </div>
+    </section>
+  }
+
+  @if (perfil === 'morador') {
+    <button mat-fab class="botao-flutuante" aria-label="Criar novo chamado" (click)="abrirNovoChamado()">
+      <span aria-hidden="true">+</span>
+    </button>
+  }
+}
+
+@if (telaChamados === 'novo') {
+  <section class="formulario-chamado">
+    <section class="identificacao-morador" aria-label="Dados do morador">
+      <mat-icon>apartment</mat-icon>
+      <div>
+        <span>Solicitante</span>
+        <strong>{{ usuarioLogado || 'Morador' }}</strong>
+      </div>
+    </section>
+    
+        <div class="navegacao-novo">
+          <button class="botao-secundario" (click)="cancelarNovoChamado()">Voltar</button>
+        </div>
+
+    <label for="titulo-chamado">Título do chamado</label>
+    <input id="titulo-chamado" #tituloInput maxlength="30" placeholder="Ex.: Portão da garagem não fecha" />
+    <span class="ajuda-campo">máx. 30 caracteres</span>
+
+    <fieldset class="grupo-escolha">
+      <legend>Categoria</legend>
+      <div class="opcoes-categoria">
+        @for (categoria of categorias; track categoria) {
+          <button
+            type="button"
+            class="opcao-categoria"
+            [class.opcao-selecionada]="categoriaSelecionada === categoria"
+            (click)="selecionarCategoria(categoria)"
+          >
+            {{ categoria }}
+          </button>
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="grupo-escolha">
+      <legend>Prioridade</legend>
+      <div class="opcoes-prioridade">
+        <button type="button" class="opcao-prioridade baixa" [class.opcao-selecionada]="prioridadeSelecionada === 2" (click)="selecionarPrioridade(2)">
+          <span></span>Baixa
+        </button>
+        <button type="button" class="opcao-prioridade media" [class.opcao-selecionada]="prioridadeSelecionada === 5" (click)="selecionarPrioridade(5)">
+          <span></span>Média
+        </button>
+        <button type="button" class="opcao-prioridade urgente" [class.opcao-selecionada]="prioridadeSelecionada === 9" (click)="selecionarPrioridade(9)">
+          <span></span>Urgente
+        </button>
+      </div>
+    </fieldset>
+
+    <label for="descricao-chamado">Descreva o que está acontecendo</label>
+    <textarea id="descricao-chamado" #descricaoInput rows="4" placeholder="Ex.: o portão da garagem está com dificuldade para fechar desde ontem à noite." (input)="ajustarAlturaDescricao(descricaoInput)"></textarea>
+
+    <input
+      #fotoInput
+      class="input-foto"
+      id="foto-chamado"
+      type="file"
+      accept="image/png, image/jpeg, image/webp"
+      (change)="selecionarFoto(fotoInput)"
+    />
+    <label class="anexar-foto" for="foto-chamado">
+      <span class="icone-foto"><mat-icon>photo_camera</mat-icon></span>
+      <span>
+        <strong>{{ fotoSelecionada === '' ? 'Anexar foto' : fotoSelecionada }}</strong>
+        <small>{{ fotoSelecionada === '' ? 'Ajuda o síndico a entender o problema' : 'Foto selecionada. Clique para trocar.' }}</small>
+      </span>
+    </label>
+
+    @if (mensagemErro !== '') {
+      <p class="mensagem-erro">{{ mensagemErro }}</p>
+    }
+
+    <button class="botao-criar" (click)="adicionarChamado(tituloInput, descricaoInput)">Enviar chamado</button>
+  </section>
+}
+
+@if (telaChamados === 'historico') {
+  <header class="cabecalho-chamados cabecalho-novo">
+    <div>
+      <h2>Histórico de chamados</h2>
+      <p>Chamados excluídos pelo síndico.</p>
+    </div>
+    <button class="botao-secundario" (click)="voltarParaChamados()">Voltar</button>
+  </header>
+
+  <section class="lista-chamados">
+    @if (historicoDoSindico().length === 0) {
+      <p class="estado-vazio">Nenhum chamado foi excluído pelo síndico.</p>
+    } @else {
+      @for (chamado of historicoDoSindico(); track chamado.id) {
+        <article class="cartao-chamado cartao-historico">
+          <h3>{{ chamado.titulo }}</h3>
+          <p class="meta-chamado">#{{ chamado.id }} · Status ao excluir: {{ chamado.status }}</p>
+          <button class="botao-sucesso" (click)="recuperarChamado(chamado)">Recuperar chamado</button>
+        </article>
+      }
+    }
+  </section>
+}
+
+@if (modalAberto) {
+  <div class="fundo-modal">
+    <section class="modal-confirmacao">
+      @if (acaoPendente === 'resolver') {
+        <h3>Resolver chamado?</h3>
+        <p>Deseja marcar este chamado como resolvido?</p>
+      } @else {
+        <h3>Excluir chamado?</h3>
+        <p>Esta ação removerá o chamado da lista.</p>
+      }
+
+      <div class="botoes-modal">
+        <button class="botao-secundario" (click)="cancelarConfirmacao()">Cancelar</button>
+        <button class="botao-perigo" (click)="confirmarAcao()">Confirmar</button>
+      </div>
+    </section>
+  </div>
+}

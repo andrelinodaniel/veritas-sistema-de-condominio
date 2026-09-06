@@ -1,0 +1,121 @@
+<section class="cartao-moradores">
+  <h2>Cadastro de moradores</h2>
+  <p>Preencha os dados para gerar o código de acesso do morador.</p>
+
+  <div class="campo-morador">
+    <label for="nome">Nome do morador</label>
+    <input
+      id="nome"
+      #nomeInput
+      type="text"
+      placeholder="Digite o nome completo">
+  </div>
+
+  <div class="campo-morador">
+    <label for="bloco">Bloco</label>
+    <input
+      id="bloco"
+      #blocoInput
+      type="text"
+      placeholder="Ex.: Bloco A">
+  </div>
+
+  <div class="campo-morador">
+    <label for="apartamento">Apartamento</label>
+    <input
+      id="apartamento"
+      #apartamentoInput
+      type="text"
+      placeholder="Ex.: 101">
+  </div>
+
+  <button
+  (click)="confirmarCadastro(
+    nomeInput.value,
+    blocoInput.value,
+    apartamentoInput.value
+  )">
+  Cadastrar morador
+</button>
+@if (erroCadastro !== '') {
+  <p class="mensagem-erro">{{ erroCadastro }}</p>
+}
+
+@if (codigoGerado !== '') {
+  <section class="codigo-gerado">
+    <strong>Morador cadastrado com sucesso!</strong>
+    <p>Código de acesso: {{ codigoGerado }}</p>
+  </section>
+}
+
+@if (mensagemSucesso !== '') {
+  <p class="mensagem-sucesso" role="status">{{ mensagemSucesso }}</p>
+}
+<hr>
+
+<h3>Moradores cadastrados</h3>
+
+@if (moradores.length === 0) {
+  <p>Nenhum morador cadastrado ainda.</p>
+} @else {
+  @for (morador of moradores; track morador.codigo) {
+    <article class="cartao-morador">
+      <p><strong>Nome:</strong> {{ morador.nome }}</p>
+      <p><strong>Bloco:</strong> {{ morador.bloco }}</p>
+      <p><strong>Apartamento:</strong> {{ morador.apartamento }}</p>
+      <p><strong>Código:</strong> {{ morador.codigo }}</p>
+      <button class="botao-excluir" type="button" (click)="pedirExclusao(morador)">
+        Excluir morador
+      </button>
+    </article>
+  }
+}
+
+@if (mostrarModalExclusao && moradorParaExcluir !== null) {
+  <div class="fundo-modal" role="presentation">
+    <section class="modal-confirmacao" role="dialog" aria-modal="true" aria-labelledby="titulo-exclusao">
+      <h3 id="titulo-exclusao">Excluir morador?</h3>
+      <p>
+        Deseja excluir {{ moradorParaExcluir.nome }} do cadastro? Esta ação não poderá ser desfeita.
+      </p>
+
+      <div class="botoes-modal">
+        <button class="botao-cancelar" type="button" (click)="cancelarExclusao()">
+          Cancelar
+        </button>
+        <button class="botao-confirmar" type="button" (click)="confirmarExclusao()">
+          Confirmar exclusão
+        </button>
+      </div>
+    </section>
+  </div>
+}
+</section>
+@if (mostrarModalConfirmacao) {
+  <div class="fundo-modal">
+    <section class="modal-confirmacao">
+      <h3>Confirmar cadastro?</h3>
+
+      <p>
+        Deseja cadastrar {{ nomePendente }} no {{ blocoPendente }},
+        apartamento {{ apartamentoPendente }}?
+      </p>
+
+      <div class="botoes-modal">
+        <button class="botao-cancelar" (click)="cancelarConfirmacao()">
+          Cancelar
+        </button>
+
+        <button
+          class="botao-confirmar"
+          (click)="confirmarCadastroFinal(
+            nomeInput,
+            blocoInput,
+            apartamentoInput
+          )">
+          Confirmar cadastro
+        </button>
+      </div>
+    </section>
+  </div>
+}

@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router'; // O Router é o "GPS" que muda a página da URL
+import { Router, RouterModule } from '@angular/router'; // O Router é o "GPS" que muda a página da URL
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
