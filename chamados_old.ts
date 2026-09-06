@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 
 // Interface que espelha o que o Django retorna em GET /api/chamados/
 export interface Chamado {
@@ -16,7 +15,7 @@ export interface Chamado {
 @Component({
   selector: 'app-chamados',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule],
   styleUrls: ['./chamados.css'],
   templateUrl: './chamados.html',
 })
@@ -26,31 +25,17 @@ export class Chamados implements OnInit {
   mensagemErro = '';
   telaChamados = 'lista';
   chamadoSelecionado: Chamado | null = null;
-  // Variáveis do formulário de novo chamado
-  categorias = ['Manutenção', 'Limpeza', 'Segurança', 'Reclamação', 'Sugestão', 'Outros'];
-  categoriaSelecionada = '';
-  prioridadeSelecionada = 2; // baixa=2, media=5, urgente=9
-  fotoSelecionada = '';
 
-  get perfil(): string {
-    return this.isSindico ? 'sindico' : 'morador';
-  }
-
+  // Saber se ├® s├¡ndico para mostrar/esconder bot├Áes
   isSindico = false;
   usuarioLogado = '';
-
-  // --- Controle de Modais ---
-  modalAberto = false;
-  acaoPendente = '';
-  chamadoParaConfirmar: Chamado | null = null;
-  // --------------------------
 
   private apiUrl = 'http://localhost:8000/api/chamados/';
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    // Verifica se o usuário logado é síndico (guardado no login)
+    // Verifica se o usu├írio logado ├® s├¡ndico (guardado no login)
     this.isSindico = localStorage.getItem('is_sindico') === 'true';
     this.usuarioLogado = localStorage.getItem('username') || '';
     this.carregarChamados();
@@ -82,7 +67,7 @@ export class Chamados implements OnInit {
   }
 
   chamadosDoMorador(): Chamado[] {
-     // O backend já filtra para o morador, mas por segurança
+     // O backend j├í filtra para o morador, mas por seguran├ºa
      return this.chamados;
   }
 
@@ -93,7 +78,7 @@ export class Chamados implements OnInit {
 
     if (titulo === '' || titulo.length > 30 || descricao === '') {
       this.mensagemSucesso = '';
-      this.mensagemErro = 'Informe um título de até 30 caracteres e descreva o problema.';
+      this.mensagemErro = 'Informe um t├¡tulo de at├® 30 caracteres e descreva o problema.';
       return;
     }
 
@@ -135,7 +120,7 @@ export class Chamados implements OnInit {
 
     this.http.patch(`${this.apiUrl}${chamado.id}/`, { status: 'concluido' }, { headers: this.getHeaders() }).subscribe({
       next: () => {
-        this.mensagemSucesso = 'Chamado marcado como concluído.';
+        this.mensagemSucesso = 'Chamado marcado como conclu├¡do.';
         this.carregarChamados();
       },
       error: () => {
@@ -148,7 +133,7 @@ export class Chamados implements OnInit {
   removerChamado(chamado: Chamado): void {
     this.http.delete(`${this.apiUrl}${chamado.id}/`, { headers: this.getHeaders() }).subscribe({
       next: () => {
-        this.mensagemSucesso = 'Chamado excluído.';
+        this.mensagemSucesso = 'Chamado exclu├¡do.';
         if (this.chamadoSelecionado === chamado) {
           this.chamadoSelecionado = null;
         }
@@ -162,58 +147,6 @@ export class Chamados implements OnInit {
 
   podeAlterar(chamado: Chamado): boolean {
      return this.isSindico || (chamado.autor && chamado.autor.username === this.usuarioLogado);
-  }
-
-  // --- Modal Confirmacao ---
-  pedirConfirmacao(acao: string, chamado: Chamado) {
-    if (!this.podeAlterar(chamado) || (acao === 'resolver' && !this.isSindico)) return;
-    this.acaoPendente = acao;
-    this.chamadoParaConfirmar = chamado;
-    this.modalAberto = true;
-  }
-
-  cancelarConfirmacao() {
-    this.modalAberto = false;
-    this.acaoPendente = '';
-    this.chamadoParaConfirmar = null;
-  }
-
-  confirmarAcao() {
-    if (this.chamadoParaConfirmar === null) return;
-    if (this.acaoPendente === 'resolver') {
-      this.resolver(this.chamadoParaConfirmar);
-    }
-    if (this.acaoPendente === 'excluir') {
-      this.removerChamado(this.chamadoParaConfirmar);
-    }
-    this.cancelarConfirmacao();
-  }
-
-  // --- Métodos de UI Formulário ---
-  selecionarCategoria(categoria: string) {
-    this.categoriaSelecionada = categoria;
-  }
-
-  selecionarPrioridade(p: number) {
-    this.prioridadeSelecionada = p;
-  }
-
-  selecionarFoto(input: HTMLInputElement) {
-    if (input.files && input.files[0]) {
-      this.fotoSelecionada = input.files[0].name;
-    } else {
-      this.fotoSelecionada = '';
-    }
-  }
-
-  ajustarAlturaDescricao(el: HTMLTextAreaElement) {
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-  }
-
-  ordenarPorUrgencia(lista: Chamado[]): Chamado[] {
-    // Por enquanto, backend não tem campo de urgencia, vamos só retornar a lista revertida (mais novos primeiro)
-    return [...lista].reverse();
   }
 
   voltarParaChamados(): void {

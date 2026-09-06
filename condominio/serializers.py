@@ -22,6 +22,14 @@ class UsuarioSerializer(serializers.ModelSerializer):
         codigo = validated_data.pop('codigo_registro',None)
         senha = validated_data.pop('password',None)
         validated_data['username'] = validated_data.get('cpf')
+        
+        if senha:
+            from django.contrib.auth.password_validation import validate_password
+            from django.core.exceptions import ValidationError as DjangoValidationError
+            try:
+                validate_password(senha)
+            except DjangoValidationError as e:
+                raise serializers.ValidationError({"password": list(e.messages)})
         from .models import Endereco
         casa_encontrada = Endereco.objects.filter(codigo_registro = codigo).first()
         if not casa_encontrada:

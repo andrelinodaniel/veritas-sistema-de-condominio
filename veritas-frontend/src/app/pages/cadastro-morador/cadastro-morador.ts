@@ -54,8 +54,14 @@ export class CadastroMorador {
       return;
     }
 
-    if (senha.length < 6 || senha.length > 8) {
-      this.erroCadastro = 'A senha deve ter entre 6 e 8 caracteres.';
+    if (senha.length < 8) {
+      this.erroCadastro = 'A senha deve ter no mínimo 8 caracteres.';
+      this.cadastroConcluido = '';
+      return;
+    }
+
+    if (/^\d+$/.test(senha)) {
+      this.erroCadastro = 'A senha não pode conter apenas números.';
       this.cadastroConcluido = '';
       return;
     }
@@ -87,12 +93,21 @@ export class CadastroMorador {
       error: (erro) => {
         this.cadastroConcluido = '';
         // O Django retorna os erros dentro do corpo da resposta
+        console.error('Erro detalhado do Django:', erro.error);
         if (erro.error?.codigo_registro) {
           this.erroCadastro = 'Código de acesso inválido ou não cadastrado pelo síndico.';
-        } else if (erro.error?.cpf) {
+        } else if (erro.error?.cpf || erro.error?.username) {
           this.erroCadastro = 'Já existe um usuário com esse CPF.';
+        } else if (typeof erro.error === 'object') {
+          // Pega a primeira mensagem de erro que o Django enviou
+          const primeiroErro = Object.values(erro.error)[0];
+          if (Array.isArray(primeiroErro)) {
+            this.erroCadastro = primeiroErro[0];
+          } else {
+            this.erroCadastro = 'Erro ao cadastrar. Verifique os dados.';
+          }
         } else {
-          this.erroCadastro = 'Erro ao cadastrar. Verifique os dados e tente novamente.';
+          this.erroCadastro = 'Erro ao se comunicar com o servidor.';
         }
       }
     });

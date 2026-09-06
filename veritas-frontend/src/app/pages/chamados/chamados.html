@@ -1,10 +1,4 @@
 @if (telaChamados === 'lista') {
-  @if (perfil === 'sindico') {
-    <div class="acoes-lista">
-      <button class="botao-secundario" (click)="abrirHistorico()">Ver histórico</button>
-    </div>
-  }
-
   <section class="resumo-chamados">
     @if (perfil === 'morador') {
       <p><strong>{{ chamadosDoMorador().length }}</strong> chamados criados</p>
@@ -33,16 +27,14 @@
         <div class="linha-chamado">
           <h3>{{ chamado.titulo }}</h3>
 
-          @if (chamado.status === 'resolvido') {
+          @if (chamado.status === 'concluido' || chamado.status === 'resolvido') {
             <span class="status status-resolvido">Concluído</span>
-          } @else if (chamado.gravidade >= 8) {
-            <span class="status status-urgente">Urgente</span>
           } @else {
             <span class="status status-aberto">Aberto</span>
           }
         </div>
 
-        <p class="meta-chamado">#{{ chamado.id }} · {{ chamado.categoria }}</p>
+        <p class="meta-chamado">#{{ chamado.id }}</p>
       </article>
     }
   </section>
@@ -51,7 +43,7 @@
     <section class="conversa-chamado">
       <header class="cabecalho-conversa">
         <div>
-          <p class="perfil-criador">Enviado por {{ chamadoSelecionado.perfilCriador }}</p>
+          <p class="perfil-criador">Enviado por {{ chamadoSelecionado.autor?.is_sindico ? 'Síndico' : 'Morador' }}</p>
           <h3>Detalhes do chamado #{{ chamadoSelecionado.id }}</h3>
         </div>
         <span [class]="chamadoSelecionado.status === 'aberto' ? 'status status-aberto' : 'status status-resolvido'">
@@ -62,7 +54,7 @@
       <div class="mensagens-conversa">
         <article class="mensagem mensagem-recebida">
           <p>{{ chamadoSelecionado.descricao }}</p>
-          <span>Solicitante: {{ chamadoSelecionado.criadoPor }}</span>
+          <span>Solicitante: {{ chamadoSelecionado.autor?.first_name }} {{ chamadoSelecionado.autor?.last_name }}</span>
         </article>
       </div>
 
@@ -161,29 +153,7 @@
   </section>
 }
 
-@if (telaChamados === 'historico') {
-  <header class="cabecalho-chamados cabecalho-novo">
-    <div>
-      <h2>Histórico de chamados</h2>
-      <p>Chamados excluídos pelo síndico.</p>
-    </div>
-    <button class="botao-secundario" (click)="voltarParaChamados()">Voltar</button>
-  </header>
 
-  <section class="lista-chamados">
-    @if (historicoDoSindico().length === 0) {
-      <p class="estado-vazio">Nenhum chamado foi excluído pelo síndico.</p>
-    } @else {
-      @for (chamado of historicoDoSindico(); track chamado.id) {
-        <article class="cartao-chamado cartao-historico">
-          <h3>{{ chamado.titulo }}</h3>
-          <p class="meta-chamado">#{{ chamado.id }} · Status ao excluir: {{ chamado.status }}</p>
-          <button class="botao-sucesso" (click)="recuperarChamado(chamado)">Recuperar chamado</button>
-        </article>
-      }
-    }
-  </section>
-}
 
 @if (modalAberto) {
   <div class="fundo-modal">
