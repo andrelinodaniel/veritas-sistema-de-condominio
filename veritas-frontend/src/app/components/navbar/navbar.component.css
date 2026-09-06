@@ -1,0 +1,36 @@
+.barra-navegacao {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--cor-card); /* Fundo escuro */
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.5); /* Sombra para cima */
+  border-top: 1px solid #334155;
+  z-index: 1000; /* Garante que a barra sempre fique por cima de tudo */
+}
+
+.botao-nav {
+  background: none;
+  border: none;
+  color: #94a3b8; /* Cor cinza clarinho apagado */
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: color 0.3s;
+  padding: 8px 16px;
+}
+
+.botao-nav:hover {
+  color: #fff; /* Fica branco ao passar o mouse */
+}
+
+/* Essa é a classe que o Angular coloca sozinho graças ao routerLinkActive */
+.botao-nav.ativo {
+  color: #f59e0b; /* Nossa cor dourada */
+  font-weight: bold;
+}

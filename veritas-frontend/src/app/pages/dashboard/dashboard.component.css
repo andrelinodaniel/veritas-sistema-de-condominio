@@ -1,5 +1,8 @@
 .dashboard-container {
-  padding: 0
+  padding: 1.5rem;
+  padding-bottom: 80px; /* <--- Espaço para a navbar inferior! */
+  background-color: var(--cor-fundo);
+  min-height: 100vh;
 }
 .subtitulo {
   color: #94a3b8;

@@ -1,1 +1,7 @@
+<!-- Aqui o Angular vai desenhar as telas (Login, Dashboard, Chamados) dependendo da URL -->
 <router-outlet></router-outlet>
+
+<!-- Só mostra a barra de navegação se o usuário tiver feito login (tiver crachá) -->
+@if (estaLogado()) {
+  <app-navbar></app-navbar>
+}

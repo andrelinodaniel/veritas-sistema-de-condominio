@@ -48,7 +48,7 @@ export class LoginComponent {
         
         // E usamos o GPS para levar o usuário pra página principal (Dashboard)
         console.log('Login feito com sucesso! Bem-vindo.');
-        // this.router.navigate(['/dashboard']); <-- Ativaremos isso depois que criarmos a Rota!
+        this.router.navigate(['/dashboard']);
       },
       error: (erro) => {
         // Caminho Triste! Senha errada ou Django desligado.

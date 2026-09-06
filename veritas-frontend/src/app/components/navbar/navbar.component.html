@@ -1,0 +1,9 @@
+<nav class="barra-navegacao">
+  <!-- O routerLink cuida de mudar a URL, e o routerLinkActive cuida de acender a cor do botão onde estamos (ex: pintar de dourado se estiver no dashboard) -->
+  <button class="botao-nav" routerLink="/dashboard" routerLinkActive="ativo">Início</button>
+  <button class="botao-nav" routerLink="/chamados" routerLinkActive="ativo">Chamados</button>
+  <button class="botao-nav" routerLink="/moradores" routerLinkActive="ativo">Moradores</button>
+  
+  <!-- O botão de sair não tem rota, ele chama a função no TS que rasga o crachá -->
+  <button class="botao-nav" (click)="fazerLogout()">Sair</button>
+</nav>
