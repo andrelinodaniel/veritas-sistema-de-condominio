@@ -28,17 +28,11 @@ export class Moradores implements OnInit {
   codigoGerado = '';
   erroCadastro = '';
   mensagemSucesso = '';
-  mostrarModalConfirmacao = false;
   mostrarModalExclusao = false;
   moradorParaExcluir: UsuarioBackend | null = null;
-  
-  // Como o cadastro do morador é feito pela própria página de login,
-  // essa tela de Moradores (vista pelo síndico) servirá principalmente 
-  // para listar os moradores e excluir.
-  // O síndico não cria o morador, ele só cria o endereço/código de acesso.
-  // Mas se quiseremos manter a tela, focamos na listagem e exclusão.
 
-  private apiUrl = 'http://localhost:8000/api/usuarios/';
+  private apiUrlUsuarios = 'http://localhost:8000/api/usuarios/';
+  private apiUrlEnderecos = 'http://localhost:8000/api/enderecos/';
 
   constructor(private http: HttpClient) {}
 
@@ -52,13 +46,39 @@ export class Moradores implements OnInit {
   }
 
   carregarMoradores(): void {
-    this.http.get<UsuarioBackend[]>(this.apiUrl, { headers: this.getHeaders() }).subscribe({
+    this.http.get<UsuarioBackend[]>(this.apiUrlUsuarios, { headers: this.getHeaders() }).subscribe({
       next: (dados) => {
         // Filtrar apenas quem não é síndico para mostrar na lista de moradores
         this.moradores = dados.filter(u => !u.is_sindico);
       },
       error: () => {
         this.erroCadastro = 'Erro ao carregar lista de moradores.';
+      }
+    });
+  }
+
+  cadastrarEndereco(bloco: string, apartamento: string): void {
+    if (bloco.trim() === '' || apartamento.trim() === '') {
+      this.erroCadastro = 'Preencha bloco e apartamento para gerar o código.';
+      this.codigoGerado = '';
+      return;
+    }
+
+    const body = {
+      bloco: bloco.trim(),
+      numero: apartamento.trim()
+    };
+
+    this.http.post<any>(this.apiUrlEnderecos, body, { headers: this.getHeaders() }).subscribe({
+      next: (resposta) => {
+        this.codigoGerado = resposta.codigo_registro;
+        this.mensagemSucesso = '';
+        this.erroCadastro = '';
+      },
+      error: () => {
+        this.erroCadastro = 'Erro ao gerar o endereço. Verifique se ele já existe.';
+        this.codigoGerado = '';
+        this.mensagemSucesso = '';
       }
     });
   }
@@ -76,7 +96,7 @@ export class Moradores implements OnInit {
   confirmarExclusao() {
     if (this.moradorParaExcluir === null) return;
 
-    this.http.delete(`${this.apiUrl}${this.moradorParaExcluir.id}/`, { headers: this.getHeaders() }).subscribe({
+    this.http.delete(`${this.apiUrlUsuarios}${this.moradorParaExcluir.id}/`, { headers: this.getHeaders() }).subscribe({
       next: () => {
         this.mensagemSucesso = `${this.moradorParaExcluir?.first_name} foi excluído do sistema.`;
         this.codigoGerado = '';

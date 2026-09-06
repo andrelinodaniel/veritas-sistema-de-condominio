@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import Usuario, Chamado
+from .models import Usuario, Chamado, Endereco
+
+class EnderecoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Endereco
+        fields = ['id', 'bloco', 'numero', 'codigo_registro', 'created_at']
+        read_only_fields = ['codigo_registro']
 
 class UsuarioSerializer(serializers.ModelSerializer):
     codigo_registro = serializers.CharField(write_only=True, required=True)

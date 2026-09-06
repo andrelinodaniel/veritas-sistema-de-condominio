@@ -1,49 +1,87 @@
 <section class="cartao-moradores">
-  <h2>Moradores cadastrados</h2>
+  <h2>Gerar código de acesso (Endereço)</h2>
+  <p>Preencha os dados do apartamento para gerar o código de acesso do morador.</p>
 
-  @if (mensagemSucesso !== '') {
-    <p class="mensagem-sucesso" role="status">{{ mensagemSucesso }}</p>
-  }
-  @if (erroCadastro !== '') {
-    <p class="mensagem-erro" role="status">{{ erroCadastro }}</p>
-  }
+  <div class="campo-morador">
+    <label for="bloco">Bloco</label>
+    <input
+      id="bloco"
+      #blocoInput
+      type="text"
+      placeholder="Ex.: Bloco A">
+  </div>
 
-  @if (moradores.length === 0) {
-    <p>Nenhum morador cadastrado ainda.</p>
-  } @else {
-    @for (morador of moradores; track morador.id) {
-      <article class="cartao-morador">
-        <p><strong>Nome:</strong> {{ morador.first_name }} {{ morador.last_name }}</p>
-        <p><strong>CPF:</strong> {{ morador.cpf }}</p>
-        <p><strong>Telefone:</strong> {{ morador.telefone }}</p>
-        <p><strong>Bloco:</strong> {{ morador.endereco?.bloco }}</p>
-        <p><strong>Apartamento:</strong> {{ morador.endereco?.numero }}</p>
-        <p><strong>Código de Acesso (Endereço):</strong> {{ morador.endereco?.codigo_registro }}</p>
-        
-        <button class="botao-excluir" type="button" (click)="pedirExclusao(morador)">
-          Excluir morador
+  <div class="campo-morador">
+    <label for="apartamento">Apartamento</label>
+    <input
+      id="apartamento"
+      #apartamentoInput
+      type="text"
+      placeholder="Ex.: 101">
+  </div>
+
+  <button
+  (click)="cadastrarEndereco(
+    blocoInput.value,
+    apartamentoInput.value
+  )">
+  Gerar Código
+</button>
+
+@if (erroCadastro !== '') {
+  <p class="mensagem-erro">{{ erroCadastro }}</p>
+}
+
+@if (codigoGerado !== '') {
+  <section class="codigo-gerado">
+    <strong>Endereço cadastrado com sucesso!</strong>
+    <p>Código de acesso: {{ codigoGerado }}</p>
+  </section>
+}
+
+@if (mensagemSucesso !== '') {
+  <p class="mensagem-sucesso" role="status">{{ mensagemSucesso }}</p>
+}
+<hr>
+
+<h3>Moradores cadastrados</h3>
+
+@if (moradores.length === 0) {
+  <p>Nenhum morador cadastrado ainda.</p>
+} @else {
+  @for (morador of moradores; track morador.id) {
+    <article class="cartao-morador">
+      <p><strong>Nome:</strong> {{ morador.first_name }} {{ morador.last_name }}</p>
+      <p><strong>CPF:</strong> {{ morador.cpf }}</p>
+      <p><strong>Telefone:</strong> {{ morador.telefone }}</p>
+      <p><strong>Bloco:</strong> {{ morador.endereco?.bloco }}</p>
+      <p><strong>Apartamento:</strong> {{ morador.endereco?.numero }}</p>
+      <p><strong>Código de Acesso (Endereço):</strong> {{ morador.endereco?.codigo_registro }}</p>
+      
+      <button class="botao-excluir" type="button" (click)="pedirExclusao(morador)">
+        Excluir morador
+      </button>
+    </article>
+  }
+}
+
+@if (mostrarModalExclusao && moradorParaExcluir !== null) {
+  <div class="fundo-modal" role="presentation">
+    <section class="modal-confirmacao" role="dialog" aria-modal="true" aria-labelledby="titulo-exclusao">
+      <h3 id="titulo-exclusao">Excluir morador?</h3>
+      <p>
+        Deseja excluir {{ moradorParaExcluir.first_name }} {{ moradorParaExcluir.last_name }} do cadastro? Esta ação não poderá ser desfeita.
+      </p>
+
+      <div class="botoes-modal">
+        <button class="botao-cancelar" type="button" (click)="cancelarExclusao()">
+          Cancelar
         </button>
-      </article>
-    }
-  }
-
-  @if (mostrarModalExclusao && moradorParaExcluir !== null) {
-    <div class="fundo-modal" role="presentation">
-      <section class="modal-confirmacao" role="dialog" aria-modal="true" aria-labelledby="titulo-exclusao">
-        <h3 id="titulo-exclusao">Excluir morador?</h3>
-        <p>
-          Deseja excluir {{ moradorParaExcluir.first_name }} {{ moradorParaExcluir.last_name }} do cadastro? Esta ação não poderá ser desfeita.
-        </p>
-
-        <div class="botoes-modal">
-          <button class="botao-cancelar" type="button" (click)="cancelarExclusao()">
-            Cancelar
-          </button>
-          <button class="botao-confirmar" type="button" (click)="confirmarExclusao()">
-            Confirmar exclusão
-          </button>
-        </div>
-      </section>
-    </div>
-  }
+        <button class="botao-confirmar" type="button" (click)="confirmarExclusao()">
+          Confirmar exclusão
+        </button>
+      </div>
+    </section>
+  </div>
+}
 </section>
