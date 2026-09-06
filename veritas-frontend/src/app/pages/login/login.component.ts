@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router'; // O Router é o "GPS" que muda a página da URL
 
 @Component({
   selector: 'app-login',
@@ -8,38 +10,50 @@ import { Component } from '@angular/core';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  // Variáveis para controlar o que aparece na tela
-  telaAtual = 'perfil'; // Pode ser 'perfil' ou 'login'
-  perfil_selecionado = ''; // Guarda se clicou em 'morador' ou 'sindico'
-  erroLogin = ''; // Mensagem vermelha de erro se a senha estiver errada
+  telaAtual = 'perfil'; 
+  perfil_selecionado = ''; 
+  erroLogin = ''; 
 
-  // Função chamada quando clica no botão do perfil (Morador ou Síndico)
+  // 1. Injetamos o Motoboy na portaria e também o GPS (Router)
+  constructor(private authService: AuthService, private router: Router) {}
+
   escolherPerfil(perfil: string) {
     this.perfil_selecionado = perfil;
   }
 
-  // Função chamada quando clica em "Continuar para login"
   ir_paralogin() {
     this.telaAtual = 'login';
   }
 
-  // Função para voltar caso desista do login
   voltarParaPerfil() {
     this.telaAtual = 'perfil';
     this.perfil_selecionado = '';
     this.erroLogin = '';
   }
 
-  // Função que será chamada quando clicar em Entrar
   fazerLogin(cpf: string, senha: string) {
     if (cpf.trim() === '' || senha.trim() === '') {
       this.erroLogin = 'Preencha os campos para realizar o login.';
-      return; // Para a execução da função aqui
+      return; 
     } 
 
     this.erroLogin = '';
     
-    // TODO: Aqui chamaremos o Motoboy (AuthService) para ir no Django!
-    console.log(`Tentando logar como ${this.perfil_selecionado} com CPF: ${cpf}`);
+    // 2. Chamando o Motoboy para ir no Django
+    this.authService.fazerLoginNoDjango(cpf, senha).subscribe({
+      next: (resposta) => {
+        // Caminho Feliz! O Django gostou da senha e devolveu o Crachá (Token).
+        // Guardamos o crachá na gaveta mágica do navegador:
+        localStorage.setItem('token', resposta.access);
+        
+        // E usamos o GPS para levar o usuário pra página principal (Dashboard)
+        console.log('Login feito com sucesso! Bem-vindo.');
+        // this.router.navigate(['/dashboard']); <-- Ativaremos isso depois que criarmos a Rota!
+      },
+      error: (erro) => {
+        // Caminho Triste! Senha errada ou Django desligado.
+        this.erroLogin = 'CPF ou senha incorretos. Tente novamente.';
+      }
+    });
   }
 }
