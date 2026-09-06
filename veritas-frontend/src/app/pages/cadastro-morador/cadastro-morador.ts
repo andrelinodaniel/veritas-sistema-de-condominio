@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
-import { CondominioStore } from '../../condominio.store';
+import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cadastro-morador',
@@ -9,11 +10,10 @@ import { CondominioStore } from '../../condominio.store';
   templateUrl: './cadastro-morador.html',
 })
 export class CadastroMorador {
-  private readonly store = inject(CondominioStore);
-  @Output() voltarLogin = new EventEmitter<void>();
   erroCadastro = '';
   cadastroConcluido = '';
-  telaAtual = 'perfil';
+
+  constructor(private http: HttpClient, private router: Router) {}
 
   finalizarCadastro(
     nome: string,
@@ -24,6 +24,7 @@ export class CadastroMorador {
     senha: string,
     confirmarSenha: string,
   ) {
+    // --- Validações básicas no front (antes de incomodar o Django) ---
     if (
       nome.trim() === '' ||
       sobrenome.trim() === '' ||
@@ -53,18 +54,6 @@ export class CadastroMorador {
       return;
     }
 
-    if (!/^[A-Z0-9]+-[A-Z0-9]{4}$/i.test(codigo.trim())) {
-      this.erroCadastro = 'Use o código no formato A42-WJHS (fornecido pelo síndico).';
-      this.cadastroConcluido = '';
-      return;
-    }
-
-    if (!this.store.codigoExiste(codigo)) {
-      this.erroCadastro = 'Código de acesso inválido ou ainda não liberado pelo síndico.';
-      this.cadastroConcluido = '';
-      return;
-    }
-
     if (senha.length < 6 || senha.length > 8) {
       this.erroCadastro = 'A senha deve ter entre 6 e 8 caracteres.';
       this.cadastroConcluido = '';
@@ -77,8 +66,36 @@ export class CadastroMorador {
       return;
     }
 
+    // --- Monta o objeto para enviar pro Django (POST /api/usuarios/) ---
+    const dadosCadastro = {
+      first_name: nome.trim(),
+      last_name: sobrenome.trim(),
+      cpf: cpfNumeros,
+      telefone: telefoneNumeros,
+      codigo_registro: codigo.trim(),   // O Django valida se esse código existe no banco!
+      password: senha,
+    };
+
     this.erroCadastro = '';
-    this.cadastroConcluido = 'Cadastro concluído com sucesso. Você já pode entrar no sistema.';
+
+    // --- Envia para a API do Django ---
+    this.http.post('http://localhost:8000/api/usuarios/', dadosCadastro).subscribe({
+      next: () => {
+        this.cadastroConcluido = 'Cadastro concluído com sucesso! Você já pode entrar no sistema.';
+        this.erroCadastro = '';
+      },
+      error: (erro) => {
+        this.cadastroConcluido = '';
+        // O Django retorna os erros dentro do corpo da resposta
+        if (erro.error?.codigo_registro) {
+          this.erroCadastro = 'Código de acesso inválido ou não cadastrado pelo síndico.';
+        } else if (erro.error?.cpf) {
+          this.erroCadastro = 'Já existe um usuário com esse CPF.';
+        } else {
+          this.erroCadastro = 'Erro ao cadastrar. Verifique os dados e tente novamente.';
+        }
+      }
+    });
   }
 
   private cpfValido(cpf: string): boolean {
@@ -97,6 +114,7 @@ export class CadastroMorador {
   }
 
   voltarParaLogin() {
-  this.voltarLogin.emit();
+    this.router.navigate(['/login']);
+  }
 }
-}
+
