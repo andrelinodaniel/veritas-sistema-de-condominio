@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 export interface DashboardData {
   total_moradores: number;
@@ -9,25 +9,20 @@ export interface DashboardData {
   chamados_concluidos: number;
 }
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardService {
+  
+  // URL do Django (agora é a rota real!)
+  private apiUrl = 'http://127.0.0.1:8000/api/dashboard/';
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   getEstatisticas(): Observable<DashboardData> {
-    // MOCK: Simulação temporária dos dados do Django
-    // Quando o Login estiver pronto, trocamos por: 
-    // return this.http.get<DashboardData>('http://localhost:8000/api/dashboard/');
-    const dadosFalsos: DashboardData = {
-      total_moradores: 48,
-      chamados_abertos: 5,
-      chamados_andamento: 3,
-      chamados_concluidos: 27
-    };
-    return of(dadosFalsos);
+    // Agora fazemos uma requisição GET real pro seu backend!
+    // Como o Interceptor está configurado, o Crachá (Token) vai junto automaticamente.
+    return this.http.get<DashboardData>(this.apiUrl);
   }
 }
 
