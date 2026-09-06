@@ -53,8 +53,8 @@ export class CadastroMorador {
       return;
     }
 
-    if (!/^MOR-\d{3}$/i.test(codigo.trim())) {
-      this.erroCadastro = 'Use o código no formato MOR-001.';
+    if (!/^[A-Z0-9]+-[A-Z0-9]{4}$/i.test(codigo.trim())) {
+      this.erroCadastro = 'Use o código no formato A42-WJHS (fornecido pelo síndico).';
       this.cadastroConcluido = '';
       return;
     }
