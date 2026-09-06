@@ -1,203 +1,155 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { Chamado, CondominioStore } from '../../condominio.store';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+
+// Interface que espelha o que o Django retorna em GET /api/chamados/
+export interface Chamado {
+  id: number;
+  titulo: string;
+  descricao: string;
+  status: string;       // 'aberto' | 'em_andamento' | 'concluido'
+  autor: any;
+  created_at: string;
+}
 
 @Component({
   selector: 'app-chamados',
   standalone: true,
-  imports: [
-    MatButtonModule,
-    MatIconModule
-  ],
+  imports: [CommonModule],
   styleUrls: ['./chamados.css'],
   templateUrl: './chamados.html',
 })
-export class Chamados {
-  private readonly store = inject(CondominioStore);
+export class Chamados implements OnInit {
+  chamados: Chamado[] = [];
   mensagemSucesso = '';
   mensagemErro = '';
-  @Input() perfil = '';
-  @Input() usuarioLogado = '';
-  @Output() telaMudou = new EventEmitter<string>();
-  modalAberto = false;
-  acaoPendente = '';
-  chamadoParaConfirmar: Chamado | null = null;
-  chamadoSelecionado: Chamado | null = null;
   telaChamados = 'lista';
-  categoriaSelecionada = 'Manutenção';
-  prioridadeSelecionada = 5;
-  fotoSelecionada = '';
-  readonly categorias = ['Manutenção', 'Barulho', 'Segurança', 'Limpeza', 'Portaria', 'Outro'];
-  chamados = this.store.chamados;
-  chamadosExcluidos = this.store.chamadosExcluidos;
+  chamadoSelecionado: Chamado | null = null;
 
-  resolver(chamado: Chamado) {
-    if (this.perfil !== 'sindico' || chamado.status !== 'aberto') return;
-    chamado.status = 'resolvido';
-    this.mensagemSucesso = 'Chamado marcado como resolvido.';
+  // Saber se é síndico para mostrar/esconder botões
+  isSindico = false;
+  usuarioLogado = '';
+
+  private apiUrl = 'http://localhost:8000/api/chamados/';
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    // Verifica se o usuário logado é síndico (guardado no login)
+    this.isSindico = localStorage.getItem('is_sindico') === 'true';
+    this.usuarioLogado = localStorage.getItem('username') || '';
+    this.carregarChamados();
   }
 
-  quantidadeAbertos() {
-    return this.chamados.filter((chamado) => chamado.status === 'aberto').length;
-  }
-  adicionarChamado(
-  tituloInput: HTMLInputElement,
-  descricaoInput: HTMLTextAreaElement,
-  ) {
-  const titulo = tituloInput.value;
-  const descricao = descricaoInput.value;
-  const gravidade = this.prioridadeSelecionada;
-
-  if (
-    titulo.trim() === '' ||
-    titulo.trim().length > 30 ||
-    descricao.trim() === '' ||
-    gravidade < 1 ||
-    gravidade > 10
-  ) {
-    this.mensagemSucesso = '';
-    this.mensagemErro =
-      'Informe um título de até 30 caracteres e descreva o problema.';
-    return;
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token') || '';
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
   }
 
-  this.mensagemSucesso = 'Chamado criado com sucesso.';
-  this.mensagemErro = '';
-
-  this.store.criarChamado(
-    titulo.trim(),
-    descricao.trim(),
-    this.categoriaSelecionada,
-    gravidade,
-    this.usuarioLogado,
-    this.perfil
-  );
-
-  tituloInput.value = '';
-  descricaoInput.value = '';
-  this.fotoSelecionada = '';
-  this.ajustarAlturaDescricao(descricaoInput);
-  this.telaChamados = 'lista';
-  this.telaMudou.emit('lista');
+  carregarChamados(): void {
+    this.http.get<Chamado[]>(this.apiUrl, { headers: this.getHeaders() }).subscribe({
+      next: (dados) => {
+        this.chamados = dados;
+      },
+      error: () => {
+        this.mensagemErro = 'Erro ao carregar chamados do servidor.';
+      }
+    });
   }
 
-  abrirNovoChamado() {
-    if (this.perfil !== 'morador') return;
+  // --- Contagens ---
+  quantidadeAbertos(): number {
+    return this.chamados.filter(c => c.status === 'aberto').length;
+  }
+
+  quantidadeAbertosDoMorador(): number {
+    return this.chamadosDoMorador().filter(c => c.status === 'aberto').length;
+  }
+
+  chamadosDoMorador(): Chamado[] {
+     // O backend já filtra para o morador, mas por segurança
+     return this.chamados;
+  }
+
+  // --- Criar chamado (POST para o Django) ---
+  adicionarChamado(tituloInput: HTMLInputElement, descricaoInput: HTMLTextAreaElement): void {
+    const titulo = tituloInput.value.trim();
+    const descricao = descricaoInput.value.trim();
+
+    if (titulo === '' || titulo.length > 30 || descricao === '') {
+      this.mensagemSucesso = '';
+      this.mensagemErro = 'Informe um título de até 30 caracteres e descreva o problema.';
+      return;
+    }
+
+    const body = { titulo, descricao, status: 'aberto' };
+
+    this.http.post(this.apiUrl, body, { headers: this.getHeaders() }).subscribe({
+      next: () => {
+        this.mensagemSucesso = 'Chamado criado com sucesso!';
+        this.mensagemErro = '';
+        tituloInput.value = '';
+        descricaoInput.value = '';
+        this.telaChamados = 'lista';
+        this.carregarChamados(); // Recarrega a lista do Django
+      },
+      error: () => {
+        this.mensagemErro = 'Erro ao criar chamado.';
+      }
+    });
+  }
+
+  abrirNovoChamado(): void {
     this.mensagemErro = '';
     this.mensagemSucesso = '';
     this.telaChamados = 'novo';
-    this.telaMudou.emit('novo');
   }
 
-  cancelarNovoChamado() {
+  cancelarNovoChamado(): void {
     this.mensagemErro = '';
-    this.fotoSelecionada = '';
     this.telaChamados = 'lista';
-    this.telaMudou.emit('lista');
   }
 
-  selecionarCategoria(categoria: string) {
-    this.categoriaSelecionada = categoria;
-  }
-
-  selecionarPrioridade(prioridade: number) {
-    this.prioridadeSelecionada = prioridade;
-  }
-
-  selecionarFoto(input: HTMLInputElement) {
-    const arquivo = input.files?.[0];
-    this.fotoSelecionada = arquivo?.name ?? '';
-  }
-  ordenarPorUrgencia(chamados: Chamado[]): Chamado[] {
-  return [...chamados].sort((a, b) => b.gravidade - a.gravidade);
-  }
-
-  ajustarAlturaDescricao(descricaoInput: HTMLTextAreaElement) {
-    descricaoInput.style.height = 'auto';
-    descricaoInput.style.height = `${descricaoInput.scrollHeight}px`;
-  }
-
-  selecionarChamado(chamado: Chamado) {
+  selecionarChamado(chamado: Chamado): void {
     this.chamadoSelecionado = chamado;
   }
 
-  removerChamado(chamado: Chamado) {
-    if (!this.podeAlterar(chamado)) return;
-    const indice = this.chamados.indexOf(chamado);
+  // --- Resolver chamado (PATCH no Django, muda status) ---
+  resolver(chamado: Chamado): void {
+    if (!this.isSindico || chamado.status !== 'aberto') return;
 
-    if (indice === -1) {
-      return;
-    }
-
-    const chamadoRemovido = this.chamados.splice(indice, 1)[0];
-
-    if (chamadoRemovido) {
-      chamadoRemovido.excluidoPor = this.perfil;
-      this.chamadosExcluidos.push(chamadoRemovido);
-
-      if (this.chamadoSelecionado === chamadoRemovido) {
-        this.chamadoSelecionado = null;
+    this.http.patch(`${this.apiUrl}${chamado.id}/`, { status: 'concluido' }, { headers: this.getHeaders() }).subscribe({
+      next: () => {
+        this.mensagemSucesso = 'Chamado marcado como concluído.';
+        this.carregarChamados();
+      },
+      error: () => {
+        this.mensagemErro = 'Erro ao resolver chamado.';
       }
-    }
+    });
   }
 
-  confirmarAcao() {
-    if (this.chamadoParaConfirmar === null) {
-      return;
-    }
-
-    if (this.acaoPendente === 'resolver') {
-      this.resolver(this.chamadoParaConfirmar);
-    }
-
-    if (this.acaoPendente === 'excluir') {
-      this.removerChamado(this.chamadoParaConfirmar);
-    }
-
-    this.cancelarConfirmacao();
-  }
-  abrirHistorico() {
-    this.telaChamados = 'historico';
-  }
-
-  voltarParaChamados() {
-    this.telaChamados = 'lista';
-  }
-  recuperarChamado(chamado: Chamado) {
-    const indice = this.chamadosExcluidos.indexOf(chamado);
-    if (indice === -1 || this.perfil !== 'sindico') return;
-    const chamadoRecuperado = this.chamadosExcluidos.splice(indice, 1)[0];
-
-    if (chamadoRecuperado) {
-      delete chamadoRecuperado.excluidoPor;
-      this.chamados.push(chamadoRecuperado);
-    }
-  }
-
-  chamadosDoMorador() {
-    return this.chamados.filter((chamado) => chamado.criadoPor === this.usuarioLogado);
-  }
-  quantidadeAbertosDoMorador() {
-    return this.chamadosDoMorador().filter((chamado) => chamado.status === 'aberto').length;
-  }
-  historicoDoSindico() {
-    return this.chamadosExcluidos.filter((chamado) => chamado.excluidoPor === 'sindico');
-  }
-  pedirConfirmacao(acao: string, chamado: Chamado) {
-    if (!this.podeAlterar(chamado) || (acao === 'resolver' && this.perfil !== 'sindico')) return;
-    this.acaoPendente = acao;
-    this.chamadoParaConfirmar = chamado;
-    this.modalAberto = true;
-  }
-
-  cancelarConfirmacao() {
-    this.modalAberto = false;
-    this.acaoPendente = '';
-    this.chamadoParaConfirmar = null;
+  // --- Excluir chamado (DELETE no Django) ---
+  removerChamado(chamado: Chamado): void {
+    this.http.delete(`${this.apiUrl}${chamado.id}/`, { headers: this.getHeaders() }).subscribe({
+      next: () => {
+        this.mensagemSucesso = 'Chamado excluído.';
+        if (this.chamadoSelecionado === chamado) {
+          this.chamadoSelecionado = null;
+        }
+        this.carregarChamados();
+      },
+      error: () => {
+        this.mensagemErro = 'Erro ao excluir chamado.';
+      }
+    });
   }
 
   podeAlterar(chamado: Chamado): boolean {
-    return this.perfil === 'sindico' || chamado.criadoPor === this.usuarioLogado;
+     return this.isSindico || (chamado.autor && chamado.autor.username === this.usuarioLogado);
+  }
+
+  voltarParaChamados(): void {
+    this.telaChamados = 'lista';
   }
 }
