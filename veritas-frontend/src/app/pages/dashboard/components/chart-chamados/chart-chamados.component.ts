@@ -24,12 +24,11 @@ export class ChartChamadosComponent implements AfterViewInit, OnChanges {
     this.desenharGrafico();
   }
 
-  // 2. Sempre que os dados recebidos mudarem, essa função roda sozinha
   ngOnChanges(changes: SimpleChanges): void {
     if (this.grafico) {
       this.grafico.destroy(); // Apaga o gráfico antigo
-      this.desenharGrafico(); // Desenha o novo com os números frescos
     }
+    this.desenharGrafico(); // Desenha o novo com os números frescos
   }
 
   desenharGrafico() {

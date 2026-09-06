@@ -3,9 +3,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from .permissions import EhAutenticado, IsSindico
-from .models import Usuario, Chamado
-from .serializers import UsuarioSerializer, ChamadoSerializer
+from .models import Usuario, Chamado, Endereco
+from .serializers import UsuarioSerializer, ChamadoSerializer, EnderecoSerializer
 
+class EnderecoViewSet(viewsets.ModelViewSet):
+    queryset = Endereco.objects.all()
+    serializer_class = EnderecoSerializer
+    permission_classes = [EhAutenticado, IsSindico]
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
