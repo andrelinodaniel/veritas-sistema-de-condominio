@@ -1,0 +1,141 @@
+/* O fundo da tela inteira pega a nossa cor escura */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--cor-fundo); 
+}
+
+/* O cartão flutuante no meio da tela */
+.card-painel-central {
+  background-color: var(--cor-card);
+  padding: 2.5rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.card-painel-central h2 {
+  color: #ffffff;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+}
+
+.card-painel-central p {
+  color: #94a3b8;
+  margin-bottom: 2rem;
+}
+
+/* Grelha que coloca os dois botões (Morador e Síndico) um em cima do outro */
+.opcoes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Estilo do botão de perfil (apagado, cinza escuro) */
+.botao-perfil {
+  background-color: transparent;
+  border: 2px solid #334155;
+  border-radius: 8px;
+  padding: 1.2rem;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.botao-perfil span {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+/* Quando o mouse passa por cima do botão */
+.botao-perfil:hover {
+  border-color: #475569;
+  background-color: rgba(255,255,255,0.02);
+}
+
+/* CLASSE MÁGICA: Quando o usuário clica, o botão fica dourado */
+.botao-perfil.selecionado {
+  border-color: #f59e0b; /* Nossa cor dourada principal */
+  background-color: rgba(245, 158, 11, 0.1); /* Dourado bem transparente */
+}
+
+/* Botãozão laranja de entrar */
+.botao-continuar {
+  width: 100%;
+  background-color: #f59e0b;
+  color: #fff;
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.2s;
+}
+
+.botao-continuar:hover {
+  background-color: #d97706;
+}
+
+/* Botão invisível só com texto para voltar */
+.botao-voltar {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  text-align: left;
+  width: 100%;
+}
+
+.botao-voltar:hover {
+  color: #fff;
+}
+
+/* Estilos do formulário de CPF e Senha */
+.campo {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.campo label {
+  display: block;
+  color: #e2e8f0;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.campo input {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background-color: #1e293b;
+  color: #fff;
+  font-size: 1rem;
+  box-sizing: border-box; /* Impede do input vazar da tela */
+}
+
+.campo input:focus {
+  outline: none;
+  border-color: #f59e0b;
+}
+
+/* Texto vermelho gritante de erro */
+.erro-texto {
+  color: #ef4444 !important;
+  margin-top: 1rem !important;
+  margin-bottom: 0 !important;
+  font-weight: bold;
+  font-size: 0.9rem;
+}

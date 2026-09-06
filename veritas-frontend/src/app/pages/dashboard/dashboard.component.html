@@ -4,23 +4,25 @@
      <p class="subtitulo">Residencial Manaus</p>
   </div>
   <div class="page-content">
-  <div class="cards-grid">
-    <div class="card">
-      <span class="card-numero">48</span>
-      <span class="card-label">Moradores</span>
-    </div>
-    <div class="card">
-      <span class="card-numero">5</span>
-      <span class="card-label">Chamados abertos</span>
-    </div>
-    <div class="card">
-      <span class="card-numero">3</span>
-      <span class="card-label">Em andamento</span>
-    </div>
-    <div class="card">
-      <span class="card-numero">27</span>
-      <span class="card-label">Concluídos</span>
-    </div>
+  <h3 class="secao-titulo">Manutenção / Chamados</h3>
+  
+  <div class="graficos-grid">
+    <app-chart-chamados [dados]="estatisticas"></app-chart-chamados>
+  </div>
+  <h3 class="secao-titulo">Funções do Síndico</h3>
+  
+  <div class="acesso-rapido-grid">
+    <button class="card-acao" type="button" matRipple matRippleColor="rgba(0,0,0,0.05)">
+      <strong>Gerenciar chamados</strong>
+      <br>
+      <span class="subtitulo" style="font-size: 0.75rem;">Resolva, exclua e veja o histórico de chamados.</span>
+    </button>
+
+    <button class="card-acao" type="button" matRipple matRippleColor="rgba(0,0,0,0.05)">
+      <strong>Cadastro de moradores</strong>
+      <br>
+      <span class="subtitulo" style="font-size: 0.75rem;">Cadastre e consulte os moradores do condomínio.</span>
+    </button>
   </div>
   </div>
 </div>
