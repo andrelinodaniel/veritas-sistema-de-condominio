@@ -65,8 +65,8 @@ export class CadastroMorador {
       return;
     }
 
-    if (senha.length !== 6) {
-      this.erroCadastro = 'A senha deve ter exatamente 6 caracteres.';
+    if (senha.length < 6 || senha.length > 8) {
+      this.erroCadastro = 'A senha deve ter entre 6 e 8 caracteres.';
       this.cadastroConcluido = '';
       return;
     }
