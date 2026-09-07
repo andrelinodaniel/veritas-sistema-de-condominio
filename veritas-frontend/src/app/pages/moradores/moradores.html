@@ -54,9 +54,9 @@
       <p><strong>Nome:</strong> {{ morador.first_name }} {{ morador.last_name }}</p>
       <p><strong>CPF:</strong> {{ morador.cpf }}</p>
       <p><strong>Telefone:</strong> {{ morador.telefone }}</p>
-      <p><strong>Bloco:</strong> {{ morador.endereco?.bloco }}</p>
-      <p><strong>Apartamento:</strong> {{ morador.endereco?.numero }}</p>
-      <p><strong>Código de Acesso (Endereço):</strong> {{ morador.endereco?.codigo_registro }}</p>
+      <p><strong>Bloco:</strong> {{ morador.endereco.bloco }}</p>
+      <p><strong>Apartamento:</strong> {{ morador.endereco.numero }}</p>
+      <p><strong>Código de Acesso (Endereço):</strong> {{ morador.endereco.codigo_registro }}</p>
       
       <button class="botao-excluir" type="button" (click)="pedirExclusao(morador)">
         Excluir morador
