@@ -257,8 +257,8 @@ export class Chamados implements OnInit {
     this.categoriaSelecionada = categoria;
   }
 
-  selecionarPrioridade(p: number) {
-    this.novaPrioridadeSelecionada = p;
+  selecionarPrioridade(p: string | number) {
+    this.novaPrioridadeSelecionada = p.toString();
   }
 
   selecionarFoto(input: HTMLInputElement) {
