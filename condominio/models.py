@@ -33,9 +33,17 @@ class Chamado(models.Model):
         ('em_andamento', 'Em Andamento'),
         ('concluido', 'Concluído'),
     ]
+    PRIORIDADE_CHOICES = [
+        ('baixa', 'Baixa'),
+        ('media', 'Média'),
+        ('alta', 'Alta'),
+    ]
     titulo = models.CharField(max_length=30)
     descricao = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES,default='aberto')
+    categoria = models.CharField(max_length=50, null=True, blank=True)
+    prioridade = models.CharField(max_length=10, choices=PRIORIDADE_CHOICES, null=True, blank=True)
+    foto = models.ImageField(upload_to='chamados/', null=True, blank=True)
     autor = models.ForeignKey(Usuario,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
