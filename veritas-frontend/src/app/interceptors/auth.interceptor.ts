@@ -4,17 +4,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Pega o crachá da gaveta
   const token = localStorage.getItem('token');
 
+  let headers = req.headers
+    .set('bypass-tunnel-reminder', 'true')
+    .set('ngrok-skip-browser-warning', 'true');
+
   // Se tiver crachá, faz uma cópia da carta (req) e grampeia o crachá nela
   if (token) {
-    const requisicaoClonada = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    // Manda a carta grampeada seguir viagem
-    return next(requisicaoClonada);
+    headers = headers.set('Authorization', `Bearer ${token}`);
   }
 
-  // Se não tiver crachá, manda a carta normal (ex: a própria requisição de login que não precisa de crachá)
-  return next(req);
+  const requisicaoClonada = req.clone({ headers });
+
+  // Manda a carta grampeada seguir viagem
+  return next(requisicaoClonada);
 };
