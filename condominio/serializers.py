@@ -41,9 +41,22 @@ class UsuarioSerializer(serializers.ModelSerializer):
         return usuario
 
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['is_sindico'] = user.is_sindico
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['is_sindico'] = self.user.is_sindico
+        return data
 class ChamadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chamado
-        fields = ['id', 'titulo', 'descricao', 'status', 'autor', 'created_at']
+        fields = ['id', 'titulo', 'descricao', 'status', 'categoria', 'prioridade', 'foto', 'autor', 'created_at']
         depth = 1
         read_only_fields = ['autor']
