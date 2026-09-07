@@ -1,35 +1,18 @@
 @if (authService.isSindico) {
+  
   <h1 class="font">Painel do Síndico</h1>
   <p class="font">Gestão do seu condomínio, num só lugar.</p>
-
-  <section class="cartao-acesso">
-    <h2>Ações Rápidas</h2>
-    <p>Escolha uma função para gerenciar o condomínio.</p>
-
-    <div class="opcoes-perfil">
-      <button class="card-perfil card-painel" type="button" routerLink="/chamados">
-        <strong>Gerenciar chamados</strong>
-        <span>Resolva, exclua e veja o histórico de chamados.</span>
-      </button>
-
-      <button class="card-perfil card-painel" type="button" routerLink="/moradores">
-        <strong>Cadastro de moradores</strong>
-        <span>Cadastre e consulte os moradores do condomínio.</span>
-      </button>
-    </div>
-  </section>
-
   <section class="estatisticas-grid">
     <div class="card-estatistica">
       <strong class="valor valor-escuro">{{ estatisticas?.total_moradores || 0 }}</strong>
       <span>Moradores cadastrados</span>
     </div>
     <div class="card-estatistica">
-      <strong class="valor valor-dourado">{{ estatisticas?.chamados_abertos || 0 }}</strong>
+      <strong class="valor valor-vermelho">{{ estatisticas?.chamados_abertos || 0 }}</strong>
       <span>Chamados abertos</span>
     </div>
     <div class="card-estatistica">
-      <strong class="valor valor-marrom">{{ estatisticas?.chamados_andamento || 0 }}</strong>
+      <strong class="valor valor-amarelo">{{ estatisticas?.chamados_andamento || 0 }}</strong>
       <span>Em andamento</span>
     </div>
     <div class="card-estatistica">
@@ -62,6 +45,24 @@
       </div>
     </div>
   </section>
+  <section class="cartao-acesso" style="margin-bottom: 24px;">
+    <h2>Ações Rápidas</h2>
+    <p>Escolha uma função para gerenciar o condomínio.</p>
+
+    <div class="opcoes-perfil">
+      <button class="card-perfil card-painel" type="button" routerLink="/chamados">
+        <strong>Gerenciar chamados</strong>
+        <span>Resolva, exclua e veja o histórico.</span>
+      </button>
+
+      <button class="card-perfil card-painel" type="button" routerLink="/moradores">
+        <strong>Cadastro de endereço</strong>
+        <span>Cadastre e consulte os moradores.</span>
+      </button>
+    </div>
+  </section>
+
+  
 } @else {
   <h1 class="font">Bem-vindo(a) ao Veritas</h1>
   <p class="font">O aplicativo do seu condomínio.</p>

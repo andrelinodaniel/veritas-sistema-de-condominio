@@ -58,5 +58,5 @@ class ChamadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chamado
         fields = ['id', 'titulo', 'descricao', 'status', 'categoria', 'prioridade', 'foto', 'autor', 'created_at']
-        depth = 1
+        depth = 2
         read_only_fields = ['autor']

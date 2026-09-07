@@ -42,6 +42,11 @@
     }
   </section>
 
+  @if (perfil === 'morador') {
+    <button mat-fab class="botao-flutuante" aria-label="Criar novo chamado" (click)="abrirNovoChamado()">
+      <span aria-hidden="true">+</span>
+    </button>
+  }
 }
 
 @if (telaChamados === 'detalhe' && chamadoSelecionado !== null) {
@@ -99,11 +104,6 @@
     }
   </section>
 
-  @if (perfil === 'morador') {
-    <button mat-fab class="botao-flutuante" aria-label="Criar novo chamado" (click)="abrirNovoChamado()">
-      <span aria-hidden="true">+</span>
-    </button>
-  }
 }
 
 @if (telaChamados === 'novo') {

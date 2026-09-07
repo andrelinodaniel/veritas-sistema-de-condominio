@@ -32,15 +32,16 @@
 }
 
 .valor-escuro { color: #1f2937; }
-.valor-dourado { color: #c27838; }
-.valor-marrom { color: #a67c52; }
-.valor-verde { color: #4b6b55; }
+.valor-vermelho { color: #ef4444; }
+.valor-amarelo { color: #f59e0b; }
+.valor-verde { color: #10b981; }
 
 .chart-wrapper {
   position: relative;
   width: 100%;
-  height: 250px;
-  margin-top: 16px;
+  max-width: 220px;
+  height: 220px;
+  margin: 16px auto 0;
 }
 
 .chart-wrapper app-chart-chamados {
