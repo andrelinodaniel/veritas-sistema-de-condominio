@@ -10,8 +10,8 @@
     <div class="filtros-chamados">
       <button (click)="filtroStatus = 'todos'" [class.ativo]="filtroStatus === 'todos'">Todos</button>
       <button (click)="filtroStatus = 'aberto'" [class.ativo]="filtroStatus === 'aberto'">Aberto</button>
-      <button (click)="filtroStatus = 'andamento'" [class.ativo]="filtroStatus === 'andamento'">Em andamento</button>
-      <button (click)="filtroStatus = 'resolvido'" [class.ativo]="filtroStatus === 'resolvido'">Concluído</button>
+      <button (click)="filtroStatus = 'em_andamento'" [class.ativo]="filtroStatus === 'em_andamento'">Em andamento</button>
+      <button (click)="filtroStatus = 'concluido'" [class.ativo]="filtroStatus === 'concluido'">Concluído</button>
     </div>
   }
 
@@ -28,9 +28,16 @@
       <article class="card-chamado" (click)="selecionarChamado(chamado)">
         <div class="card-header">
           <h4>{{ chamado.titulo }}</h4>
-          <span class="badge-status" [class]="'badge-' + chamado.status">
-            {{ chamado.status === 'aberto' ? 'Aberto' : (chamado.status === 'andamento' ? 'Em andamento' : 'Concluído') }}
-          </span>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
+            @if (chamado.prioridade) {
+              <span class="badge-status" [style.backgroundColor]="chamado.prioridade === 'alta' ? '#ef4444' : (chamado.prioridade === 'media' ? '#f59e0b' : '#10b981')" style="color: white;">
+                {{ chamado.prioridade === 'alta' ? 'Alta' : (chamado.prioridade === 'media' ? 'Média' : 'Baixa') }}
+              </span>
+            }
+            <span class="badge-status" [class]="'badge-' + chamado.status">
+              {{ chamado.status === 'aberto' ? 'Aberto' : (chamado.status === 'em_andamento' ? 'Em andamento' : 'Concluído') }}
+            </span>
+          </div>
         </div>
         <div class="card-body">
           @if (perfil === 'sindico') {
@@ -52,15 +59,15 @@
 @if (telaChamados === 'detalhe' && chamadoSelecionado !== null) {
   <section class="conversa-chamado detalhe-chamado-novo">
     <div class="header-detalhe">
-      <button (click)="fecharDetalhe()" class="btn-voltar">
-        <mat-icon>arrow_back</mat-icon>
+      <button (click)="fecharDetalhe()" class="btn-voltar" style="width: auto; padding: 0 16px; border-radius: 20px;">
+        <mat-icon style="margin-right: 4px;">arrow_back</mat-icon> Voltar
       </button>
       <h2>Chamado #{{ chamadoSelecionado.id }}</h2>
     </div>
 
     <div class="card-detalhe">
       <span class="badge-status" [class]="'badge-' + chamadoSelecionado.status">
-        {{ chamadoSelecionado.status === 'aberto' ? 'Aberto' : (chamadoSelecionado.status === 'andamento' ? 'Em andamento' : 'Concluído') }}
+        {{ chamadoSelecionado.status === 'aberto' ? 'Aberto' : (chamadoSelecionado.status === 'em_andamento' ? 'Em andamento' : 'Concluído') }}
       </span>
       <h3 class="titulo-detalhe">{{ chamadoSelecionado.titulo }}</h3>
 
@@ -83,8 +90,8 @@
           <h4>Atualizar status (ação do síndico)</h4>
           <div class="botoes-status">
             <button (click)="selecionarNovoStatus('aberto')" [class.ativo]="novoStatusSelecionado === 'aberto'">Aberto</button>
-            <button (click)="selecionarNovoStatus('andamento')" [class.ativo]="novoStatusSelecionado === 'andamento'">Em andamento</button>
-            <button (click)="selecionarNovoStatus('resolvido')" [class.ativo]="novoStatusSelecionado === 'resolvido'">Concluído</button>
+            <button (click)="selecionarNovoStatus('em_andamento')" [class.ativo]="novoStatusSelecionado === 'em_andamento'">Em andamento</button>
+            <button (click)="selecionarNovoStatus('concluido')" [class.ativo]="novoStatusSelecionado === 'concluido'">Concluído</button>
           </div>
         </div>
         
@@ -97,11 +104,13 @@
           </div>
         </div>
       }
+      
+      @if (perfil === 'sindico') {
+        <button class="botao-salvar" style="width: 100%; margin: 24px 0 0 0;" (click)="salvarAlteracaoStatus()">Salvar alteração</button>
+        <button class="botao-salvar" style="width: 100%; margin: 12px 0 0 0; background-color: #dc2626;" (click)="removerChamado(chamadoSelecionado)">Excluir chamado</button>
+      }
     </div>
 
-    @if (perfil === 'sindico') {
-      <button class="botao-salvar" (click)="salvarAlteracaoStatus()">Salvar alteração</button>
-    }
   </section>
 
 }
@@ -145,21 +154,6 @@
     <label for="descricao-chamado">Descreva o que está acontecendo</label>
     <textarea id="descricao-chamado" #descricaoInput rows="4" placeholder="Ex.: o portão da garagem está com dificuldade para fechar desde ontem à noite." (input)="ajustarAlturaDescricao(descricaoInput)"></textarea>
 
-    <input
-      #fotoInput
-      class="input-foto"
-      id="foto-chamado"
-      type="file"
-      accept="image/png, image/jpeg, image/webp"
-      (change)="selecionarFoto(fotoInput)"
-    />
-    <label class="anexar-foto" for="foto-chamado">
-      <span class="icone-foto"><mat-icon>photo_camera</mat-icon></span>
-      <span>
-        <strong>{{ fotoSelecionada === '' ? 'Anexar foto' : fotoSelecionada }}</strong>
-        <small>{{ fotoSelecionada === '' ? 'Ajuda o síndico a entender o problema' : 'Foto selecionada. Clique para trocar.' }}</small>
-      </span>
-    </label>
 
     @if (mensagemErro !== '') {
       <p class="mensagem-erro">{{ mensagemErro }}</p>

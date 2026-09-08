@@ -1,7 +1,9 @@
 @if (authService.isSindico) {
   
-  <h1 class="font">Painel do Síndico</h1>
-  <p class="font">Gestão do seu condomínio, num só lugar.</p>
+  <div style="margin-bottom: 24px;">
+    <img src="/logo.png" alt="Veritas" style="max-height: 50px; margin-bottom: 8px;">
+    <h1 class="font" style="margin-top: 0;">Painel do Síndico</h1>
+  </div>
   <section class="estatisticas-grid">
     <div class="card-estatistica">
       <strong class="valor valor-escuro">{{ estatisticas?.total_moradores || 0 }}</strong>
@@ -64,8 +66,10 @@
 
   
 } @else {
-  <h1 class="font">Bem-vindo(a) ao Veritas</h1>
-  <p class="font">O aplicativo do seu condomínio.</p>
+  <div style="margin-bottom: 24px;">
+    <img src="/logo.png" alt="Veritas" style="max-height: 50px; margin-bottom: 8px;">
+    <h1 class="font" style="margin-top: 0;">Bem-vindo(a) ao Veritas</h1>
+  </div>
 
   <section class="cartao-acesso">
     <h2>Ações Rápidas</h2>

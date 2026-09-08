@@ -1083,6 +1083,7 @@ button.botao-secundario:hover {
 
 .badge-aberto { background-color: #c27838; color: #ffffff; }
 .badge-andamento { background-color: #a67c52; color: #ffffff; }
+.badge-em_andamento { background-color: #a67c52; color: #ffffff; }
 .badge-concluido { background-color: #4b6b55; color: #ffffff; }
 .badge-resolvido { background-color: #4b6b55; color: #ffffff; }
 
