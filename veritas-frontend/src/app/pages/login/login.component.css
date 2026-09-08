@@ -1,2 +1,57 @@
-/* As regras CSS para o login (botão entrar, campo-login, cartao-acesso) 
-agora vêm do styles.css (o antigo app.css do seu projeto master). */
+.abas-perfil {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.aba {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: #757575;
+  padding: 8px 16px;
+  cursor: pointer;
+  position: relative;
+  font-family: 'Roboto', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.aba:hover {
+  color: #333;
+}
+
+.aba.aba-ativa {
+  color: #333;
+  font-weight: 500;
+}
+
+.aba.aba-ativa::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; /* Alinha com a borda de baixo do container */
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #8c734b; /* Cor dourada do seu tema */
+  border-radius: 2px;
+}
+
+.botao-entrar {
+  width: 100%;
+  margin-top: 18px;
+  padding: 13px 16px;
+  border: 1px solid #292929;
+  border-radius: 8px;
+  background: #292929;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background-color 0.2s;
+}
+
+.botao-entrar:hover {
+  background: #4a4741;
+}

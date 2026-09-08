@@ -213,7 +213,7 @@ export class Chamados implements OnInit {
       next: () => {
         this.mensagemSucesso = 'Chamado excluído.';
         if (this.chamadoSelecionado === chamado) {
-          this.chamadoSelecionado = null;
+          this.fecharDetalhe();
         }
         this.carregarChamados();
       },

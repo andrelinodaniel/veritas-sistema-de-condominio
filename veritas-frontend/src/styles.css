@@ -386,31 +386,7 @@ p.font {
   margin: 32px auto 0;
 }
 
-/* Botão voltar para perfil */
-.login-container > button:first-of-type {
-  display: block;
-  width: fit-content;
-  margin: 18px 0 0 auto;
-  
-  padding: 9px 12px;
-  border: 1px solid #d5d0c7;
-  border-radius: 7px;
-  background: #ffffff;
-  color: #4d4943;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-/* Efeito ao passar o mouse */
-.login-container > button:first-of-type:hover {
-  background-color: #f5f5f5;
-}
-
-/* Efeito ao passar o mouse */
-.login-container > button:first-of-type:hover {
-  background-color: #f5f5f5;
-}
+/* Regra obsoleta do botão voltar foi removida para não afetar o botão Entrar */
 
 /* Título Entrar */
 .login-container h2 {

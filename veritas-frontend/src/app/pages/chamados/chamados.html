@@ -107,7 +107,7 @@
       
       @if (perfil === 'sindico') {
         <button class="botao-salvar" style="width: 100%; margin: 24px 0 0 0;" (click)="salvarAlteracaoStatus()">Salvar alteração</button>
-        <button class="botao-salvar" style="width: 100%; margin: 12px 0 0 0; background-color: #dc2626;" (click)="removerChamado(chamadoSelecionado)">Excluir chamado</button>
+        <button class="botao-salvar" style="width: 100%; margin: 12px 0 0 0; background-color: #dc2626;" (click)="pedirConfirmacao('excluir', chamadoSelecionado)">Excluir chamado</button>
       }
     </div>
 

@@ -12,8 +12,11 @@ class EnderecoViewSet(viewsets.ModelViewSet):
     permission_classes = [EhAutenticado, IsSindico]
 
 class UsuarioViewSet(viewsets.ModelViewSet):
-    queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
+    
+    def get_queryset(self):
+        # Retorna apenas os moradores reais (ignora síndico e admin do Django)
+        return Usuario.objects.filter(is_sindico=False, is_staff=False, is_superuser=False)
     permission_classes = [EhAutenticado,IsSindico]
     def get_permissions(self):
         if self.action == 'create':
@@ -40,7 +43,7 @@ class ChamadoViewSet(viewsets.ModelViewSet):
 class DashboardView(APIView):
     permission_classes = [EhAutenticado,IsSindico]
     def get(self,request):
-        total_moradores = Usuario.objects.filter(is_sindico=False).count()
+        total_moradores = Usuario.objects.filter(is_sindico=False, is_staff=False, is_superuser=False).count()
         chamados_abertos = Chamado.objects.filter(status='aberto').count()
         chamados_andamento = Chamado.objects.filter(status='em_andamento').count()
         chamados_concluidos = Chamado.objects.filter(status='concluido').count()

@@ -4,42 +4,25 @@
     <img src="/logo.png" alt="Veritas - Gestão de Condomínio" style="max-width: 280px; height: auto;">
   </div>
 
-  @if (telaAtual === 'perfil') {
-  <section class="cartao-acesso">
-    <h2>Escolha seu perfil</h2>
-
-    <div class="opcoes-perfil">
-      <button class="card-perfil" type="button" (click)="escolherPerfil('morador')" [attr.aria-pressed]="perfil_selecionado === 'morador'">
-        <img class="icone-perfil" src="/assets/icones/morador.webp" alt="Ícone de morador">
-        <strong>Morador</strong>
-        <span>Abra e acompanhe os seus chamados.</span>
+  <section class="login-container">
+    
+    <!-- Abas de Perfil -->
+    <div class="abas-perfil">
+      <button 
+        class="aba" 
+        [class.aba-ativa]="perfilSelecionado === 'morador'" 
+        (click)="selecionarPerfil('morador')">
+        Sou Morador
       </button>
-
-      <button class="card-perfil" type="button" (click)="escolherPerfil('sindico')" [attr.aria-pressed]="perfil_selecionado === 'sindico'">
-        <img class="icone-perfil" src="/assets/icones/sindico.webp" alt="Ícone de síndico">
-        <strong>Síndico</strong>
-        <span>Gerencie, resolva e acompanhe os chamados.</span>
+      <button 
+        class="aba" 
+        [class.aba-ativa]="perfilSelecionado === 'sindico'" 
+        (click)="selecionarPerfil('sindico')">
+        Sou Síndico
       </button>
     </div>
 
-    @if (perfil_selecionado !== '') {
-      <p class="font2">Perfil escolhido: {{ perfil_selecionado }}</p>
-
-      <button class="botao-continuar" type="button" (click)="ir_paralogin()">
-        Continuar para login
-      </button>
-    } @else {
-      <p>Escolha como deseja entrar no sistema.</p>
-    }
-  </section>
-}
-
-@if (telaAtual === 'login'){
-  <section class="login-container">
-    <button class="botao-voltar" type="button" (click)="voltarParaPerfil()">voltar para perfil</button>
-
-    <h4>Entrar</h4>
-    <div class="campo-login">
+    <div class="campo-login" style="margin-top: 16px;">
       <label for="identificador">CPF</label>
       <input
         id="identificador"
@@ -67,8 +50,8 @@
       Entrar
     </button>
     
-    @if (perfil_selecionado === 'morador') {
-      <span class="dourado" routerLink="/cadastro">
+    @if (perfilSelecionado === 'morador') {
+      <span class="dourado" routerLink="/cadastro" style="display: block; margin-top: 16px; text-align: center;">
         Ainda não tem conta? Cadastrar-se
       </span>
     }
@@ -77,6 +60,5 @@
       <p class="mensagem-erro">{{ erroLogin }}</p>
     }
   </section>
-}
 
 </div>

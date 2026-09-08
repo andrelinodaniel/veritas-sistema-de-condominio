@@ -10,25 +10,15 @@ import { Router, RouterModule } from '@angular/router'; // O Router é o "GPS" q
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  telaAtual = 'perfil'; 
-  perfil_selecionado = ''; 
   erroLogin = ''; 
+  perfilSelecionado = 'morador';
 
   // 1. Injetamos o Motoboy na portaria e também o GPS (Router)
   constructor(private authService: AuthService, private router: Router) {}
 
-  escolherPerfil(perfil: string) {
-    this.perfil_selecionado = perfil;
-  }
-
-  ir_paralogin() {
-    this.telaAtual = 'login';
-  }
-
-  voltarParaPerfil() {
-    this.telaAtual = 'perfil';
-    this.perfil_selecionado = '';
-    this.erroLogin = '';
+  selecionarPerfil(perfil: string) {
+    this.perfilSelecionado = perfil;
+    this.erroLogin = ''; // Limpa os erros se o usuário mudar de aba
   }
 
   fazerLogin(cpf: string, senha: string) {
