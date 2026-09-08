@@ -4,7 +4,7 @@ from .views import UsuarioViewSet, ChamadoViewSet, DashboardView, EnderecoViewSe
 
 router = DefaultRouter()
 
-router.register('usuarios',UsuarioViewSet)
+router.register('usuarios',UsuarioViewSet, basename='usuarios')
 router.register('chamados',ChamadoViewSet, basename='chamados')
 router.register('enderecos',EnderecoViewSet, basename='enderecos')
 
