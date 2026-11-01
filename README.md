@@ -26,7 +26,7 @@ Siga os passos abaixo para testar o backend do projeto na sua máquina:
 
 1. **Clone o repositório:**
 ```bash
-git clone https://github.com/[SEU_USUARIO]/veritas.git
+git clone https://github.com/andrelinodaniel/veritas-sistema-de-condominio
 cd veritas
 ```
 
@@ -60,5 +60,5 @@ python manage.py runserver
 Acesse a API em `http://127.0.0.1:8000/api/` e o Painel de Controle em `http://127.0.0.1:8000/admin/`.
 
 ## Autor
-Desenvolvido por **André (Equipe Veritas)** para a MostraTech.
-Entre em contato: [Seu LinkedIn ou Email]
+Desenvolvido por **(Equipe Veritas)** para a MostraTech.
+
